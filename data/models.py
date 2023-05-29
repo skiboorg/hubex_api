@@ -95,7 +95,7 @@ class Equipment(models.Model):
     firm = models.ForeignKey(EquipmentFirm, on_delete=models.CASCADE, blank=True, null=True)
     object = models.ForeignKey(Object, on_delete=models.CASCADE, blank=True, null=True, related_name='equipments')
     serial_number = models.CharField(max_length=255, blank=True, null=True, editable=False)
-    qr = models.FileField(upload_to='equipment/', blank=True, null=True, editable=False)
+    qr = models.FileField(upload_to='equipment/', blank=True, null=True, editable=True)
     name = models.CharField(max_length=255, blank=True, null=True)
     date_in_work = models.DateField(blank=True, null=True)
     comment = models.TextField(blank=True, null=True)
