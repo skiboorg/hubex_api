@@ -107,7 +107,7 @@ class Equipment(models.Model):
         serial_number = f'{create_random_string(3)}-{create_random_string(5)}-{create_random_string(True,2)}'
         if not self.qr:
             self.serial_number = serial_number
-            qr = segno.make_qr(f'http://79.132.139.252:9000/equipment/qr/{serial_number}', version=23, error='L', mask=3)
+            qr = segno.make_qr(f'http://91.228.155.186:9000/equipment/qr/{serial_number}', version=23, error='L', mask=3)
             path = f'{settings.MEDIA_ROOT}/equipment/{serial_number}.png'
             qr.save(path, scale=10, dark=(0, 0, 0,), light=(240, 240, 240), border=0)
             self.qr = f'equipment/{serial_number}.png'
