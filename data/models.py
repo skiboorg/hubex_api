@@ -94,8 +94,8 @@ class Equipment(models.Model):
     model = models.ForeignKey(EquipmentModel, on_delete=models.CASCADE, blank=True, null=True)
     firm = models.ForeignKey(EquipmentFirm, on_delete=models.CASCADE, blank=True, null=True)
     object = models.ForeignKey(Object, on_delete=models.CASCADE, blank=True, null=True, related_name='equipments')
-    serial_number = models.CharField(max_length=255, blank=True, null=True)
-    qr = models.FileField(upload_to='equipment/', blank=True, null=True)
+    serial_number = models.CharField(max_length=255, blank=True, null=True, editable=False)
+    qr = models.FileField(upload_to='equipment/', blank=True, null=True, editable=False)
     name = models.CharField(max_length=255, blank=True, null=True)
     date_in_work = models.DateField(blank=True, null=True)
     comment = models.TextField(blank=True, null=True)
@@ -105,9 +105,8 @@ class Equipment(models.Model):
 
     def save(self, *args, **kwargs):
         serial_number = f'{create_random_string(3)}-{create_random_string(5)}-{create_random_string(True,2)}'
-        if not self.serial_number:
-            self.serial_number = serial_number
         if not self.qr:
+            self.serial_number = serial_number
             qr = segno.make_qr(f'http://79.132.139.252:9000/equipment/qr/{serial_number}', version=23, error='L', mask=3)
             path = f'{settings.MEDIA_ROOT}/equipment/{serial_number}.png'
             qr.save(path, scale=10, dark=(0, 0, 0,), light=(240, 240, 240), border=0)
