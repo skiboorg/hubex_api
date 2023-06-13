@@ -3,7 +3,6 @@ from django.urls import path,include
 from django.conf import settings
 from django.conf.urls.static import static
 
-from data.router import router as data_router
 
 urlpatterns = [
 
@@ -11,7 +10,11 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls')),
 
     path('api/user/', include('user.urls')),
-    path('api/data/', include('data.urls')),
+    path('api/data/', include('client.urls')),
+    path('api/data/', include('order.urls')),
+
+    path('api/data/', include('object.urls')),
+    path('api/data/', include('equipment.urls')),
     # path('api/data/', include(data_router.urls)),
 
     path('ckeditor/', include('ckeditor_uploader.urls')),
