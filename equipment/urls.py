@@ -3,6 +3,8 @@ from . import views
 from .router import router
 urlpatterns = [
     path('', include(router.urls)),
-    # path('rashodnik_categories', views.GetRashodnikCategories.as_view()),
+    path('equipment_by_object', views.GetByObject.as_view()),
+    path('equipment_firm', views.GetFirm.as_view()),
+    path('equipment_model', views.GetModel.as_view()),
 
 ]

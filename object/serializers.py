@@ -18,9 +18,9 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class ObjectImageSerializer(serializers.ModelSerializer):
+class ObjectFileSerializer(serializers.ModelSerializer):
     class Meta:
-        model = ObjectImage
+        model = ObjectFile
         fields = '__all__'
 
 
@@ -31,10 +31,10 @@ class ObjectContactSerializer(serializers.ModelSerializer):
 
 
 class ObjectSerializer(serializers.ModelSerializer):
-    from equipment.serializers import EquipmentSerializer
-    images = ObjectImageSerializer(many=True,read_only=True, required=False)
+    from client.serializers import ClientSerializer
+    files = ObjectFileSerializer(many=True,read_only=True, required=False)
     contacts = ObjectContactSerializer(many=True, read_only=True, required=False)
-    equipments = EquipmentSerializer(many=True, read_only=True, required=False)
+    client = ClientSerializer(many=False, required=False, read_only=True)
     class Meta:
         model = Object
         fields = '__all__'

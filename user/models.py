@@ -37,26 +37,33 @@ class UserManager(BaseUserManager):
         return self._create_user(login, password, **extra_fields)
 
 
+class Role(models.Model):
+    name = models.CharField(max_length=50, blank=True, null=True)
 
+    def __str__(self):
+        return self.name
 
 class User(AbstractUser):
     username = None
     firstname = None
     lastname = None
+    role = models.ForeignKey(Role, on_delete=models.CASCADE, blank=True, null=True)
 
     uuid = models.UUIDField(default=uuid.uuid4, db_index=True)
     login = models.CharField('Логин', max_length=20, blank=True, null=True, unique=True)
     email = models.CharField('Почта', max_length=20, blank=True, null=True)
     fio = models.CharField('ФИО', max_length=50, blank=True, null=True)
     phone = models.CharField('Телефон', max_length=50, blank=True, null=True)
-
+    plain_password = models.CharField(max_length=50, blank=True, null=True)
+    avatar = models.FileField(upload_to='usr/ava',blank=True, null=True)
+    is_driving = models.BooleanField(default=False, blank=True)
 
     USERNAME_FIELD = 'login'
     REQUIRED_FIELDS = []
     objects = UserManager()
 
     def __str__(self):
-        return f'{self.fio} {self.email}'
+        return f'{self.fio} - {self.role.name if self.role else "нет роли"}'
 
     class Meta:
         verbose_name = 'Пользователь'

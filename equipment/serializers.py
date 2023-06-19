@@ -31,18 +31,13 @@ class EquipmentFirmSerializer(serializers.ModelSerializer):
 
 
 class EquipmentSerializer(serializers.ModelSerializer):
+    from object.serializers import ObjectSerializer
+    from order.serializers import OrderShortSerializer
     model = EquipmentModelSerializer(many=False, read_only=True, required=False)
     firm = EquipmentFirmSerializer(many=False, read_only=True, required=False)
-    object = serializers.SerializerMethodField()
-    orders = serializers.SerializerMethodField()
+    object = ObjectSerializer(many=False, read_only=True, required=False)
+    orders = OrderShortSerializer(many=True, read_only=True, required=False)
     class Meta:
         model = Equipment
         fields = '__all__'
 
-    def get_object(self, obj):
-        from object.serializers import ObjectSerializer
-        return ObjectSerializer(obj).data
-
-    def get_orders(self, obj):
-        from order.serializers import OrderSerializer
-        return OrderSerializer(obj).data

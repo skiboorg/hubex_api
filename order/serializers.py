@@ -50,21 +50,33 @@ class StageSerializer(serializers.ModelSerializer):
         model = Stage
         fields = '__all__'
 
+class StageShortSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Stage
+        fields = ['name']
+
 
 class CheckListDataSerializer(serializers.ModelSerializer):
     class Meta:
         model = CheckListData
         fields = '__all__'
 
+class OrderShortSerializer(serializers.ModelSerializer):
+    status = StatusSerializer(many=False, read_only=True, required=False)
+    stage = StageShortSerializer(many=False, read_only=True, required=False)
+
+    class Meta:
+        model = Order
+        fields = '__all__'
 
 
 class OrderSerializer(serializers.ModelSerializer):
     from object.serializers import ObjectSerializer
-    from equipment.serializers import EquipmentSerializer
+
     status = StatusSerializer(many=False, read_only=True, required=False)
     stage = StageSerializer(many=False, read_only=True, required=False)
     object = ObjectSerializer(many=False, read_only=True, required=False)
-    equipment = EquipmentSerializer(many=False, read_only=True, required=False)
+
     class Meta:
         model = Order
         fields = '__all__'

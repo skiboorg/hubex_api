@@ -7,7 +7,9 @@ class Object(models.Model):
     comment = models.TextField(blank=True, null=True)
     address = models.TextField(blank=True, null=True)
     address_comment = models.TextField(blank=True, null=True)
-
+    client = models.ForeignKey('client.Client',blank=True, null=True, on_delete=models.CASCADE)
+    image = models.FileField(upload_to='object/image', blank=True, null=True)
+    # equipment = models.ManyToManyField('equipment.Equipment', blank=True)
     def __str__(self):
         return f'{self.name}'
 
@@ -16,9 +18,11 @@ class Object(models.Model):
         verbose_name_plural = 'Объекты'
 
 
-class ObjectImage(models.Model):
-    object = models.ForeignKey(Object, on_delete=models.CASCADE, blank=True, null=True, related_name='images')
-    image = models.FileField(upload_to='object/images', blank=True, null=True)
+class ObjectFile(models.Model):
+    object = models.ForeignKey(Object, on_delete=models.CASCADE, blank=True, null=True, related_name='files')
+    file = models.FileField(upload_to='object/images', blank=True, null=True)
+    text = models.CharField(max_length=255, blank=True, null=True)
+    size = models.CharField(max_length=255, blank=True, null=True)
     def __str__(self):
         return f'{self.object.name}'
 

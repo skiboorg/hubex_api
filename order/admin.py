@@ -15,5 +15,6 @@ admin.site.register(CheckListInput)
 admin.site.register(Stage)
 admin.site.register(CheckListData)
 admin.site.register(Order)
+admin.site.register(StageLog)
 
 

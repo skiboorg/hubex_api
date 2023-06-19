@@ -26,7 +26,7 @@ class Equipment(models.Model):
     object = models.ForeignKey('object.Object', on_delete=models.CASCADE, blank=True, null=True, related_name='equipments')
     serial_number = models.CharField(max_length=255, blank=True, null=True, editable=False)
     qr = models.FileField(upload_to='equipment/', blank=True, null=True, editable=True)
-    name = models.CharField(max_length=255, blank=True, null=True)
+    name = models.CharField(max_length=255, blank=False, null=True)
     date_in_work = models.DateField(blank=True, null=True)
     comment = models.TextField(blank=True, null=True)
 

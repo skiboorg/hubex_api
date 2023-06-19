@@ -30,16 +30,20 @@ class UserAdmin(BaseUserAdmin):
         (None, {'fields': ('login', 'password')}),
         ('Personal info',
          {'fields': (
-             'added_by',
+             'role',
              'email',
                 "fio",
                 "phone",
+                "is_driving",
+                "avatar",
+                "plain_password",
 
          )}
          ),
         ('Permissions', {'fields': ('is_staff', 'is_superuser', 'groups',)}),)
 
 admin.site.register(User,UserAdmin)
+admin.site.register(Role)
 
 
 

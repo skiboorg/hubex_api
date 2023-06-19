@@ -23,8 +23,12 @@ class GetUser(generics.RetrieveAPIView):
 
 class AddUser(APIView):
     def post(self,request):
-
+        print(request.data)
         setattr(request.data, '_mutable', True)
+        try:
+            request.data.pop('avatar')
+        except:
+            pass
         try:
             request.data.pop('files')
             files_descriptions = request.data.pop('descriptions')
@@ -38,13 +42,21 @@ class AddUser(APIView):
 
         data = json.loads(json.dumps(request.data))
         json_data = {}
+
         for dat in data:
+            print(dat)
             json_data[dat] = json.loads(data[dat])
         serializer = UserSerializer(data=json_data)
-
+        avatar = request.FILES.get('avatar', None)
         if serializer.is_valid():
             obj = serializer.save()
-            obj.added_by = request.user
+            # obj.added_by = request.user
+            print(obj)
+            if avatar:
+                obj.avatar = avatar
+            obj.plain_password = json_data['password']
+            obj.role_id = json_data['role']
+            obj.set_password(json_data['password'])
             obj.save()
             # for index,file in enumerate(request.FILES.getlist('files')):
             #     UserFile.objects.create(file=file,user=obj,description=files_descriptions[index])
@@ -123,4 +135,15 @@ class DeleteUser(generics.DestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     lookup_field = 'uuid'
+
+
+class GetAllUsers(generics.ListAPIView):
+    # permission_classes = [IsAuthenticated]
+    serializer_class = UserSerializer
+    queryset = User.objects.filter(is_active=True)
+
+class GetRoles(generics.ListCreateAPIView):
+    # permission_classes = [IsAuthenticated]
+    serializer_class = RoleSerializer
+    queryset = Role.objects.all()
 
