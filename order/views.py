@@ -21,12 +21,12 @@ class OrderViewSet(viewsets.ModelViewSet):
         )
 
     def perform_update(self, serializer):
-
         stage_id = self.request.data.get('stage_id', None)
+        print(stage_id)
+
+
         if stage_id:
-            serializer.save(
-                stage_id=stage_id
-            )
+            serializer.save(stage_id=stage_id)
             StageLog.objects.create(user=self.request.user,order=serializer.instance,new_stage_id=stage_id)
 
 class SaveCheckListData(APIView):

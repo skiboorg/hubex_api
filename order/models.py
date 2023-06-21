@@ -92,8 +92,8 @@ class Order(models.Model):
         default_stage = Stage.objects.get(is_default=True)
         default_type = Type.objects.get(is_default=True)
         default_status = Status.objects.get(is_default=True)
-
-        self.stage = default_stage
+        if not self.stage:
+            self.stage = default_stage
         self.type = default_type
         self.status = default_status
         if not self.number:
@@ -108,7 +108,7 @@ class CheckListData(models.Model):
 
 
 class StageLog(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE, blank=True, null=True)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, blank=True, null=True, related_name='stage_logs')
     user = models.ForeignKey('user.User', on_delete=models.CASCADE, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     new_stage = models.ForeignKey(Stage, on_delete=models.CASCADE, blank=True, null=True)
