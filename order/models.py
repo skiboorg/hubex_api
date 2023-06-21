@@ -1,9 +1,12 @@
 from django.db import models
 from equipment.services import create_random_string
+from colorfield.fields import ColorField
 
 class Status(models.Model):
     name = models.CharField(max_length=255, blank=True, null=True)
-
+    bg_color = ColorField(default='#FF0000')
+    text_color = ColorField(default='#FFFFFF')
+    is_default = models.BooleanField(default=False, null=True)
     class Meta:
         verbose_name = 'Статус '
         verbose_name_plural = 'Статус '
@@ -14,7 +17,7 @@ class Status(models.Model):
 
 class Type(models.Model):
     name = models.CharField(max_length=255, blank=True, null=True)
-
+    is_default = models.BooleanField(default=False, null=True)
     class Meta:
         verbose_name = 'Тип '
         verbose_name_plural = 'Тип '
@@ -54,7 +57,7 @@ class Stage(models.Model):
     comment = models.TextField(blank=True, null=True)
     role = models.ForeignKey('user.Role', on_delete=models.SET_NULL, blank=True, null=True)
     check_list = models.ForeignKey(CheckList, on_delete=models.CASCADE, blank=True, null=True)
-    is_check_list_done = models.BooleanField(default=False, null=True)
+    is_default = models.BooleanField(default=False, null=True)
     btn_1_goto_stage = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True, related_name='goto_stage_1_btn')
     btn_1_label = models.CharField(max_length=255, blank=True, null=True)
     btn_2_goto_stage = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True, related_name='goto_stage_2_btn')
@@ -76,7 +79,7 @@ class Order(models.Model):
     equipment = models.ForeignKey('equipment.Equipment', on_delete=models.CASCADE, blank=True, null=True,related_name='orders')
     comment = models.TextField(blank=True, null=True)
 
-    date_created_at = models.DateField(blank=True, null=True)
+    date_created_at = models.DateField(auto_now_add=True, null=True)
     date_assign_worker = models.DateField(blank=True, null=True)
     date_done = models.DateField(blank=True, null=True)
     date_dead_line = models.DateField(blank=True, null=True)
@@ -86,14 +89,20 @@ class Order(models.Model):
 
     def save(self, *args, **kwargs):
         number = f'{create_random_string(3)}-{create_random_string(5)}-{create_random_string(digits=False,num=2)}'
+        default_stage = Stage.objects.get(is_default=True)
+        default_type = Type.objects.get(is_default=True)
+        default_status = Status.objects.get(is_default=True)
+
+        self.stage = default_stage
+        self.type = default_type
+        self.status = default_status
         if not self.number:
             self.number = number
         super().save(*args, **kwargs)
 
 
 class CheckListData(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE, blank=True, null=True)
-    stage = models.ForeignKey(Stage, on_delete=models.CASCADE, blank=True, null=True)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, blank=True, null=True, related_name='check_lists')
     check_list = models.ForeignKey(CheckList, on_delete=models.CASCADE, blank=True, null=True)
     data = models.JSONField(blank=True, null=True)
 

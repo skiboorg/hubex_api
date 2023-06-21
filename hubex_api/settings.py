@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
 
+    'colorfield',
+
     'django_filters',
 
     'django_cleanup',

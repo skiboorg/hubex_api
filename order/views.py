@@ -10,19 +10,15 @@ class OrderViewSet(viewsets.ModelViewSet):
     serializer_class = OrderSerializer
     lookup_field = 'number'
 
-    # def perform_create(self, serializer):
-    #     print(self.request.data)
-    #     type_id = self.request.data['type']['id']
-    #     condition_id = self.request.data['condition']['id']
-    #     status_id = self.request.data['status']['id']
-    #     supplier_id = self.request.data['supplier']['id']
-    #     analizes = self.request.data['analizes']
-    #     serializer.save(
-    #         type_id=type_id,
-    #         condition_id=condition_id,
-    #         status_id=status_id,
-    #         supplier_id=supplier_id,
-    #     )
+    def perform_create(self, serializer):
+        print(self.request.data)
+        object_id = self.request.data['object']
+        equipment_id = self.request.data['equipment']
+
+        serializer.save(
+            object_id=object_id,
+            equipment_id=equipment_id,
+        )
 
     def perform_update(self, serializer):
 

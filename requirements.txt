@@ -1,6 +1,6 @@
 djangorestframework
 django-cors-headers
-
+django-colorfield
 pillow
 djoser
 pytils

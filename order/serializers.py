@@ -24,6 +24,11 @@ class StatusSerializer(serializers.ModelSerializer):
         model = Status
         fields = '__all__'
 
+class TypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Type
+        fields = '__all__'
+
 class InputFieldSerializer(serializers.ModelSerializer):
     class Meta:
         model = InputField
@@ -57,6 +62,7 @@ class StageShortSerializer(serializers.ModelSerializer):
 
 
 class CheckListDataSerializer(serializers.ModelSerializer):
+    check_list= CheckListSerializer(many=False, read_only=True, required=False)
     class Meta:
         model = CheckListData
         fields = '__all__'
@@ -70,12 +76,37 @@ class OrderShortSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+from equipment.models import *
+class EquipmentModelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EquipmentModel
+        fields = '__all__'
+
+class EquipmentFirmSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EquipmentFirm
+        fields = '__all__'
+class EquipmentSerializer(serializers.ModelSerializer):
+
+    model = EquipmentModelSerializer(many=False, read_only=True, required=False)
+    firm = EquipmentFirmSerializer(many=False, read_only=True, required=False)
+    class Meta:
+        model = Equipment
+        fields = '__all__'
+
+
+
 class OrderSerializer(serializers.ModelSerializer):
+    from user.serializers import UserSerializer
     from object.serializers import ObjectSerializer
 
+    type = TypeSerializer(many=False, read_only=True, required=False)
     status = StatusSerializer(many=False, read_only=True, required=False)
     stage = StageSerializer(many=False, read_only=True, required=False)
     object = ObjectSerializer(many=False, read_only=True, required=False)
+    equipment = EquipmentSerializer(many=False, read_only=True, required=False)
+    users = UserSerializer(many=True, read_only=True, required=False)
+    check_lists = CheckListDataSerializer(many=True, read_only=True, required=False)
 
     class Meta:
         model = Order
