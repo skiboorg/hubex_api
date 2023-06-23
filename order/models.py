@@ -1,12 +1,16 @@
 from django.db import models
 from equipment.services import create_random_string
 from colorfield.fields import ColorField
+from django.db.models.signals import post_save
+import os
+from django.conf import settings
 
 class Status(models.Model):
     name = models.CharField(max_length=255, blank=True, null=True)
     bg_color = ColorField(default='#FF0000')
     text_color = ColorField(default='#FFFFFF')
     is_default = models.BooleanField(default=False, null=True)
+    is_done = models.BooleanField(default=False, blank=True)
     class Meta:
         verbose_name = 'Статус '
         verbose_name_plural = 'Статус '
@@ -56,6 +60,7 @@ class Stage(models.Model):
     name = models.CharField(max_length=255, blank=True, null=True)
     comment = models.TextField(blank=True, null=True)
     role = models.ForeignKey('user.Role', on_delete=models.SET_NULL, blank=True, null=True)
+    status = models.ForeignKey(Status, on_delete=models.CASCADE, blank=True, null=True)
     check_list = models.ForeignKey(CheckList, on_delete=models.CASCADE, blank=True, null=True)
     is_default = models.BooleanField(default=False, null=True)
     btn_1_goto_stage = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True, related_name='goto_stage_1_btn')
@@ -83,23 +88,37 @@ class Order(models.Model):
     date_assign_worker = models.DateField(blank=True, null=True)
     date_done = models.DateField(blank=True, null=True)
     date_dead_line = models.DateField(blank=True, null=True)
+    is_done = models.BooleanField(default=False, blank=True)
     class Meta:
         verbose_name = 'Заявка'
         verbose_name_plural = 'Заявки'
 
-    def save(self, *args, **kwargs):
-        number = f'{create_random_string(3)}-{create_random_string(5)}-{create_random_string(digits=False,num=2)}'
+    # def save(self, *args, **kwargs):
+    #
+    #     if not self.stage:
+    #         self.stage = default_stage
+    #     if not self.status:
+    #         self.status = default_status
+    #     self.type = default_type
+    #     if not self.number:
+    #
+    #     super().save(*args, **kwargs)
+
+def order_post_save(sender, instance, created, **kwargs):
+    if created:
         default_stage = Stage.objects.get(is_default=True)
         default_type = Type.objects.get(is_default=True)
         default_status = Status.objects.get(is_default=True)
-        if not self.stage:
-            self.stage = default_stage
-        self.type = default_type
-        self.status = default_status
-        if not self.number:
-            self.number = number
-        super().save(*args, **kwargs)
 
+        number = f'{create_random_string(3)}-{create_random_string(5)}-{create_random_string(digits=False, num=2)}'
+        instance.number = number
+        instance.stage = default_stage
+        instance.type = default_type
+        instance.status = default_status
+        instance.save()
+
+
+post_save.connect(order_post_save, sender=Order)
 
 class CheckListData(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, blank=True, null=True, related_name='check_lists')
@@ -116,4 +135,19 @@ class StageLog(models.Model):
 
 
 
+class OrderFile(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, blank=True, null=True, related_name='files')
+    file = models.FileField(upload_to='order/files', blank=True, null=True)
+    text = models.CharField(max_length=255, blank=True, null=True)
+    size = models.CharField(max_length=255, blank=True, null=True)
+    def __str__(self):
+        return f'{self.order.number}'
 
+
+def obj_file_post_save(sender, instance, created, **kwargs):
+    if created:
+        fullpath = os.path.join(settings.MEDIA_ROOT, instance.file.field.upload_to, instance.file.path)
+        instance.size = os.path.getsize(fullpath)
+        instance.save()
+
+post_save.connect(obj_file_post_save, sender=OrderFile)

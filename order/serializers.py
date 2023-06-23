@@ -63,6 +63,7 @@ class StageShortSerializer(serializers.ModelSerializer):
 class StageLogSerializer(serializers.ModelSerializer):
     from user.serializers import UserSerializer
     user = UserSerializer(many=False, read_only=True, required=False)
+    new_stage = StageShortSerializer(many=False, read_only=True, required=False)
     class Meta:
         model = StageLog
         fields = '__all__'
@@ -101,7 +102,10 @@ class EquipmentSerializer(serializers.ModelSerializer):
         model = Equipment
         fields = '__all__'
 
-
+class OrderFileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OrderFile
+        fields = '__all__'
 
 class OrderSerializer(serializers.ModelSerializer):
     from user.serializers import UserSerializer
@@ -115,7 +119,7 @@ class OrderSerializer(serializers.ModelSerializer):
     users = UserSerializer(many=True, read_only=True, required=False)
     check_lists = CheckListDataSerializer(many=True, read_only=True, required=False)
     stage_logs = StageLogSerializer(many=True, read_only=True, required=False)
-
+    files = OrderFileSerializer(many=True, read_only=True, required=False)
     class Meta:
         model = Order
         fields = '__all__'

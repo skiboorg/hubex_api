@@ -13,6 +13,7 @@ class ObjectViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         print(request.data)
         setattr(request.data, '_mutable', True)
+
         try:
             request.data.pop('image')
         except:
@@ -27,6 +28,7 @@ class ObjectViewSet(viewsets.ModelViewSet):
         for dat in data:
             json_data[dat] = json.loads(data[dat])
         serializer = self.get_serializer(data=json_data)
+
         if serializer.is_valid():
             obj = serializer.save()
             obj.client_id = json_data['client']
@@ -37,6 +39,14 @@ class ObjectViewSet(viewsets.ModelViewSet):
             obj.save()
             for index,file in enumerate(request.FILES.getlist('files')):
                 ObjectFile.objects.create(file=file,object=obj,text=files_descriptions[index])
+
+            for contact in json_data['contacts']:
+                contact_serializer = ObjectContactSerializer(data=contact)
+                if contact_serializer.is_valid():
+                    contact_obj = contact_serializer.save()
+                    contact_obj.object = obj
+                    contact_obj.save()
+
         else:
             print(serializer.errors)
 
