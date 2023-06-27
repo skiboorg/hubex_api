@@ -28,7 +28,6 @@ class ObjectViewSet(viewsets.ModelViewSet):
         for dat in data:
             json_data[dat] = json.loads(data[dat])
         serializer = self.get_serializer(data=json_data)
-
         if serializer.is_valid():
             obj = serializer.save()
             obj.client_id = json_data['client']
@@ -46,9 +45,22 @@ class ObjectViewSet(viewsets.ModelViewSet):
                     contact_obj = contact_serializer.save()
                     contact_obj.object = obj
                     contact_obj.save()
-
+            for equipment in json_data['equipments']:
+                ObjectAdditionalEquipment.objects.create(object=obj,
+                                                         model_id=equipment['model'],
+                                                         category_id=equipment['category'],
+                                                         amount=equipment['amount'])
         else:
             print(serializer.errors)
 
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+
+class GetAddEqCategory(generics.ListAPIView):
+    serializer_class = AdditionalEquipmentCategorySerializer
+    queryset = AdditionalEquipmentCategory.objects.all()
+
+class GetAddEqModel(generics.ListAPIView):
+    serializer_class = AdditionalEquipmentModelSerializer
+    queryset = AdditionalEquipmentModel.objects.all()

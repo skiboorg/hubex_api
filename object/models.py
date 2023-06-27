@@ -55,3 +55,31 @@ class ObjectContact(models.Model):
     class Meta:
         verbose_name = 'Контакт объекта'
         verbose_name_plural = 'Контакты объекта'
+
+
+class AdditionalEquipmentCategory(models.Model):
+    name = models.CharField(max_length=255, blank=True, null=True)
+    def __str__(self):
+        return f'{self.name}'
+    class Meta:
+        verbose_name = 'Категория Доп оборудование'
+        verbose_name_plural = 'Категория Доп оборудование'
+
+class AdditionalEquipmentModel(models.Model):
+    name = models.CharField(max_length=255, blank=True, null=True)
+    def __str__(self):
+        return f'{self.name}'
+    class Meta:
+        verbose_name = 'Модель Доп оборудование'
+        verbose_name_plural = 'Модель Доп оборудование'
+class ObjectAdditionalEquipment(models.Model):
+    amount = models.IntegerField(blank=True, null=True)
+    object = models.ForeignKey(Object, on_delete=models.CASCADE, blank=True, null=True, related_name='additional_equipments')
+    category = models.ForeignKey(AdditionalEquipmentCategory, on_delete=models.CASCADE, blank=True, null=True)
+    model = models.ForeignKey(AdditionalEquipmentModel, on_delete=models.CASCADE, blank=True, null=True)
+    def __str__(self):
+        return f'{self.category.name} {self.model.name} {self.amount}'
+
+    class Meta:
+        verbose_name = 'Доп оборудование'
+        verbose_name_plural = 'Доп оборудование'

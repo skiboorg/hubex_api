@@ -124,4 +124,13 @@ class OrderSerializer(serializers.ModelSerializer):
         model = Order
         fields = '__all__'
 
+class OrderShortSerializer(serializers.ModelSerializer):
+    from object.serializers import ObjectSerializer
 
+    status = StatusSerializer(many=False, read_only=True, required=False)
+    object = ObjectSerializer(many=False, read_only=True, required=False)
+    equipment = EquipmentSerializer(many=False, read_only=True, required=False)
+
+    class Meta:
+        model = Order
+        fields = '__all__'

@@ -13,6 +13,7 @@ django-ckeditor
 django-filter
 pytils
 segno
+qrcode
 
 
 

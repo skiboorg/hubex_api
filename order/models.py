@@ -33,6 +33,9 @@ class Type(models.Model):
 class InputField(models.Model):
     name = models.CharField(max_length=255, blank=True, null=True)
     is_boolean = models.BooleanField(default=False, null=True)
+    is_boolean_with_input = models.BooleanField(default=False, null=True)
+    is_multiple_boolean = models.BooleanField(default=False, null=True)
+    is_multiple_boolean_with_input = models.BooleanField(default=False, null=True)
     is_input = models.BooleanField(default=False, null=True)
     is_date = models.BooleanField(default=False, null=True)
 
@@ -53,6 +56,8 @@ class CheckListInput(models.Model):
     check_list = models.ForeignKey(CheckList, on_delete=models.CASCADE, blank=True, null=True, related_name='inputs')
     input = models.ForeignKey(InputField, on_delete=models.CASCADE, blank=True, null=True)
     label = models.CharField(max_length=255, blank=True, null=True)
+    labels = models.CharField(max_length=255, blank=True, null=True)
+    input_data = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
         ordering = ('order_num',)
@@ -90,6 +95,7 @@ class Order(models.Model):
     date_dead_line = models.DateField(blank=True, null=True)
     is_done = models.BooleanField(default=False, blank=True)
     class Meta:
+        ordering = ('-is_critical',)
         verbose_name = 'Заявка'
         verbose_name_plural = 'Заявки'
 

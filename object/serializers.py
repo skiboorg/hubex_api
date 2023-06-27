@@ -18,6 +18,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+
 class ObjectFileSerializer(serializers.ModelSerializer):
     class Meta:
         model = ObjectFile
@@ -30,11 +31,32 @@ class ObjectContactSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class AdditionalEquipmentCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AdditionalEquipmentCategory
+        fields = '__all__'
+
+
+class AdditionalEquipmentModelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AdditionalEquipmentModel
+        fields = '__all__'
+
+
+class ObjectAdditionalEquipmentSerializer(serializers.ModelSerializer):
+    category = AdditionalEquipmentCategorySerializer(many=False, required=False, read_only=True)
+    model = AdditionalEquipmentModelSerializer(many=False, required=False, read_only=True)
+    class Meta:
+        model = ObjectAdditionalEquipment
+        fields = '__all__'
+
+
 class ObjectSerializer(serializers.ModelSerializer):
     from client.serializers import ClientSerializer
     files = ObjectFileSerializer(many=True,read_only=True, required=False)
     contacts = ObjectContactSerializer(many=True, read_only=True, required=False)
     client = ClientSerializer(many=False, required=False, read_only=True)
+    additional_equipments = ObjectAdditionalEquipmentSerializer(many=True, required=False, read_only=True)
     class Meta:
         model = Object
         fields = '__all__'

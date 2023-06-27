@@ -5,22 +5,46 @@ from rest_framework.response import Response
 from .serializers import *
 from .models import *
 from rest_framework import generics, viewsets, parsers
+import django_filters
+from django_filters import IsoDateTimeFilter
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters
 
 
+
+class OrderFilter(django_filters.FilterSet):
+    created_at_gte = IsoDateTimeFilter(field_name="date_created_at", lookup_expr='gte')
+    created_at_lte = IsoDateTimeFilter(field_name="date_created_at", lookup_expr='lte')
+    class Meta:
+        model = Order
+        fields = {
+            'is_done': ('exact',),
+            'is_critical': ('exact',),
+        }
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
     lookup_field = 'number'
+    filterset_class = OrderFilter
+    # filterset_fields = [
+    #     'is_critical',
+    #     'is_done',
+    #     'created_at_gte',
+    #     'created_at_lte',
+    # ]
 
     # def perform_create(self, serializer):
-    #     print(self.request.data)
-    #     object_id = self.request.data['object']
-    #     equipment_id = self.request.data['equipment']
-    #
-    #     serializer.save(
-    #         object_id=object_id,
-    #         equipment_id=equipment_id,
-    #     )
+    #     print('serializer.validated_data',serializer.validated_data)
+    #     serializer.save()
+
+    def get_serializer_class(self):
+        full_mode = self.request.query_params.get('full', None)
+        print(full_mode)
+        if full_mode:
+            return OrderSerializer
+        else:
+            return OrderShortSerializer
 
     def create(self, request, *args, **kwargs):
         print(request.data)
@@ -62,7 +86,6 @@ class OrderViewSet(viewsets.ModelViewSet):
             StageLog.objects.create(user=self.request.user,order=serializer.instance,new_stage=new_stage)
 
         if is_done:
-            print(is_done)
             done_status = Status.objects.get(is_done=True)
             serializer.save(is_done=True, stage_id=None, status=done_status)
 
