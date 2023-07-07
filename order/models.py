@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 from equipment.services import create_random_string
 from colorfield.fields import ColorField
@@ -68,6 +69,14 @@ class Stage(models.Model):
     status = models.ForeignKey(Status, on_delete=models.CASCADE, blank=True, null=True)
     check_list = models.ForeignKey(CheckList, on_delete=models.CASCADE, blank=True, null=True)
     is_default = models.BooleanField(default=False, null=True)
+
+    need_add_user = models.BooleanField(default=False, null=True)
+    is_add_user_required = models.BooleanField(default=False, null=True)
+    add_user_role = models.ForeignKey('user.Role', on_delete=models.SET_NULL, blank=True, null=True,
+                                      related_name='add_user_role')
+    add_user_role_btn_label = models.CharField(max_length=255, blank=True, null=True)
+
+
     btn_1_goto_stage = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True, related_name='goto_stage_1_btn')
     btn_1_label = models.CharField(max_length=255, blank=True, null=True)
     btn_2_goto_stage = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True, related_name='goto_stage_2_btn')
@@ -79,6 +88,7 @@ class Stage(models.Model):
 
 
 class Order(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, db_index=True)
     number = models.CharField(max_length=255, blank=True, null=True)
     stage = models.ForeignKey(Stage, on_delete=models.CASCADE, blank=True, null=True)
     status = models.ForeignKey(Status, on_delete=models.CASCADE, blank=True, null=True)

@@ -9,7 +9,8 @@ import django_filters
 from django_filters import IsoDateTimeFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
-
+from chat.models import OrderChat
+from user.models import User, UserWorkTime
 
 
 class OrderFilter(django_filters.FilterSet):
@@ -40,13 +41,13 @@ class OrderViewSet(viewsets.ModelViewSet):
 
     def get_serializer_class(self):
         full_mode = self.request.query_params.get('full', None)
-        print(full_mode)
         if full_mode:
             return OrderSerializer
         else:
             return OrderShortSerializer
 
     def create(self, request, *args, **kwargs):
+
         print(request.data)
         setattr(request.data, '_mutable', True)
         try:
@@ -66,6 +67,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             obj.save()
             for index,file in enumerate(request.FILES.getlist('files')):
                 OrderFile.objects.create(file=file,order=obj,text=files_descriptions[index])
+            OrderChat.objects.create(order=obj)
         else:
             print(serializer.errors)
 
@@ -105,3 +107,56 @@ class GetOrdersByWorker(generics.ListAPIView):
         user = self.request.user
         print(user.role.id)
         return Order.objects.filter(users__in=[user.id], stage__role_id=user.role.id)
+
+
+class DeleteUserFromOrder(APIView):
+    def post(self, request):
+        order_uuid = request.data['order']
+        user_uuid = request.data['user']
+        order = Order.objects.get(uuid=order_uuid)
+        user = User.objects.get(uuid=user_uuid)
+        qs = UserWorkTime.objects.filter(order=order, user=user)
+        order.users.remove(user)
+        if qs.exists():
+            qs.first().delete()
+        return Response(status=200)
+
+
+
+class AddUsersToOrder(APIView):
+
+    def post(self, request):
+        order_uuid = request.data['order']
+        order_users = request.data['users']
+        order = Order.objects.get(uuid=order_uuid)
+        chat, _ = OrderChat.objects.get_or_create(order=order)
+        print(order)
+
+        staff_users = User.objects.filter(is_staff=True)
+        for staff_user in staff_users:
+            chat.users.add(staff_user)
+
+        for order_user in order_users:
+            user = User.objects.get(id=order_user['id'])
+            order.users.add(user)
+            chat.users.add(user)
+            if order_user['events']:
+                UserWorkTime.objects.create(
+                    user=user,
+                    order=order,
+                    start=order_user['events']['start'],
+                    end=order_user['events']['end'],
+                )
+            print(order_user)
+        return Response(status=200)
+
+class AddUserToOrder(APIView):
+    def post(self, request):
+        order_uuid = request.data['order']
+        order_user = request.data['user']
+        order = Order.objects.get(uuid=order_uuid)
+        chat, _ = OrderChat.objects.get_or_create(order=order)
+        user = User.objects.get(uuid=order_user)
+        order.users.add(user)
+        chat.users.add(user)
+        return Response(status=200)

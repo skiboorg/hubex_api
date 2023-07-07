@@ -50,7 +50,9 @@ class CheckListSerializer(serializers.ModelSerializer):
 
 
 class StageSerializer(serializers.ModelSerializer):
+    from user.serializers import RoleSerializer
     check_list = CheckListSerializer(many=False, read_only=True, required=False)
+    add_user_role = RoleSerializer(many=False, read_only=True, required=False)
     class Meta:
         model = Stage
         fields = '__all__'

@@ -37,12 +37,15 @@ class UserAdmin(BaseUserAdmin):
                 "is_driving",
                 "avatar",
                 "plain_password",
+                "is_online",
+                "channel",
 
          )}
          ),
         ('Permissions', {'fields': ('is_staff', 'is_superuser', 'groups',)}),)
 
 admin.site.register(User,UserAdmin)
+admin.site.register(UserWorkTime)
 admin.site.register(Role)
 
 

@@ -147,3 +147,12 @@ class GetRoles(generics.ListCreateAPIView):
     serializer_class = RoleSerializer
     queryset = Role.objects.all()
 
+class GetUserByRole(generics.ListAPIView):
+    # permission_classes = [IsAuthenticated]
+    serializer_class = UserSerializer
+    def get_queryset(self):
+        return User.objects.filter(role__id = self.request.query_params.get('id'))
+
+
+
+

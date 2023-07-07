@@ -9,6 +9,7 @@ from io import BytesIO
 class EquipmentModel(models.Model):
     name = models.CharField(max_length=255, blank=False, null=True)
     image = models.FileField(upload_to='equipment/', blank=True, null=True)
+    file = models.FileField(upload_to='equipment/', blank=True, null=True)
 
     class Meta:
         verbose_name = 'Модель оборудования'

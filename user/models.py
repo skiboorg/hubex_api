@@ -57,6 +57,8 @@ class User(AbstractUser):
     plain_password = models.CharField(max_length=50, blank=True, null=True)
     avatar = models.FileField(upload_to='usr/ava',blank=True, null=True)
     is_driving = models.BooleanField(default=False, blank=True)
+    is_online = models.BooleanField('Онлайн', default=False)
+    channel = models.CharField(max_length=255, blank=True, null=True)
 
     USERNAME_FIELD = 'login'
     REQUIRED_FIELDS = []
@@ -79,5 +81,12 @@ def user_post_save(sender, instance, created, **kwargs):
 
 
 post_save.connect(user_post_save, sender=User)
+
+
+class UserWorkTime(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, related_name='work_time')
+    order = models.ForeignKey('order.Order', on_delete=models.CASCADE, blank=True, null=True)
+    start = models.DateTimeField(blank=True, null=True)
+    end = models.DateTimeField(blank=True, null=True)
 
 

@@ -4,6 +4,12 @@ from random import choices
 import string
 import qrcode
 from PIL import Image, ImageDraw, ImageFont
+from qrcode.image.styles.moduledrawers.pil import RoundedModuleDrawer
+from qrcode.image.styles.colormasks import RadialGradiantColorMask
+from qrcode.image.styledpil import StyledPilImage
+import qrcode.image.svg
+from qrcode.image.styles.moduledrawers.svg import SvgCircleDrawer
+
 
 def makeThumb(image):
     fill_color = '#fff'
@@ -32,22 +38,28 @@ def create_random_string(digits=False, num=4):
 def generate_styled_qrcode(data):
     # Создаем QR-код
     qr = qrcode.QRCode(
-        version=1,
-        error_correction=qrcode.constants.ERROR_CORRECT_L,
-        box_size=3,
-        border=0,
+        #version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_H,
+        #box_size=3,
+        #border=0,
     )
     qr.add_data(data)
     qr.make(fit=True)
 
-    # Создаем изображение QR-кода с настраиваемыми параметрами
-    qr_img = qr.make_image(fill_color="black", back_color="white")
+
+    qr_img = qr.make_image(image_factory=StyledPilImage,
+                           module_drawer=RoundedModuleDrawer(),
+                            color_mask = RadialGradiantColorMask(),
+                             embeded_image_path = "logo.jpg"
+                           )
+
+
 
     # Настраиваем стилизацию QR-кода
     # Примеры настроек:
-    qr_img = qr_img.convert("RGB")  # Конвертируем в RGB, чтобы иметь возможность менять цвета
-    qr_img = qr_img.resize((300, 300))  # Изменяем размер QR-кода по необходимости
-    qr_img = apply_custom_colors(qr_img, fill_color=(144, 0, 0), back_color=(255, 255, 255))  # Настраиваем цвета
+    #qr_img = qr_img.convert("RGB")  # Конвертируем в RGB, чтобы иметь возможность менять цвета
+    #qr_img = qr_img.resize((300, 300))  # Изменяем размер QR-кода по необходимости
+    # qr_img = apply_custom_colors(qr_img, fill_color=(0, 0, 255), back_color=(255, 255, 255))  # Настраиваем цвета
 
     return qr_img
 
@@ -67,7 +79,7 @@ def make_info_qr(qr_img,cap1,text1,cap2,text2):
     background_color = (255, 255, 255)
     cap_color = (140, 140, 140)
     text_color = (0, 0, 0)
-    width, height = 400, 500
+    width, height = 450, 600
     image = Image.new('RGB', (width, height), background_color)
     draw = ImageDraw.Draw(image)
     font_title = ImageFont.truetype('arial.ttf', size=11)
@@ -98,8 +110,8 @@ def make_info_qr(qr_img,cap1,text1,cap2,text2):
     draw.text((text_x, text_y), text2, font=font_text, fill=text_color)
 
     # Наложение QR-кода на изображение с текстом
-    # qr_img = qr_img.resize((200, 200))  # Изменяем размер QR-кода по необходимости
-    qr_position = ((width - qr_img.width) // 2 , (height - qr_img.height) )
+    #qr_img = qr_img.resize((300, 300))  # Изменяем размер QR-кода по необходимости
+    qr_position = (0 , (height - qr_img.height) )
     image.paste(qr_img, qr_position)
 
     return image

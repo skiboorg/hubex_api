@@ -8,6 +8,10 @@ pytils
 celery
 redis
 
+channels==3.0.5
+channels-redis==3.4.1
+daphne==3.0.2
+
 django-cleanup
 django-ckeditor
 django-filter
