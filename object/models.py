@@ -67,6 +67,7 @@ class AdditionalEquipmentCategory(models.Model):
 
 class AdditionalEquipmentModel(models.Model):
     name = models.CharField(max_length=255, blank=True, null=True)
+    category = models.ForeignKey(AdditionalEquipmentCategory, on_delete=models.CASCADE, blank=True, null=True, related_name='models')
     def __str__(self):
         return f'{self.name}'
     class Meta:
@@ -75,10 +76,9 @@ class AdditionalEquipmentModel(models.Model):
 class ObjectAdditionalEquipment(models.Model):
     amount = models.IntegerField(blank=True, null=True)
     object = models.ForeignKey(Object, on_delete=models.CASCADE, blank=True, null=True, related_name='additional_equipments')
-    category = models.ForeignKey(AdditionalEquipmentCategory, on_delete=models.CASCADE, blank=True, null=True)
     model = models.ForeignKey(AdditionalEquipmentModel, on_delete=models.CASCADE, blank=True, null=True)
     def __str__(self):
-        return f'{self.category.name} {self.model.name} {self.amount}'
+        return f'{self.model.category.name} {self.model.name} {self.amount}'
 
     class Meta:
         verbose_name = 'Доп оборудование'

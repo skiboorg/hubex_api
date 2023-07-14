@@ -11,11 +11,22 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 from chat.models import OrderChat
 from user.models import User, UserWorkTime
+from django.db.models import Count, Q
 
 
 class OrderFilter(django_filters.FilterSet):
     created_at_gte = IsoDateTimeFilter(field_name="date_created_at", lookup_expr='gte')
     created_at_lte = IsoDateTimeFilter(field_name="date_created_at", lookup_expr='lte')
+    q = django_filters.CharFilter(method='my_custom_filter', label="Search")
+
+    def my_custom_filter(self, queryset, name, value):
+        return queryset.filter(
+            Q(number__icontains=value) |
+            Q(object__name__icontains=value) |
+            Q(equipment__model__name__icontains=value) |
+            Q(equipment__serial_number__icontains=value)
+        )
+
     class Meta:
         model = Order
         fields = {
@@ -109,6 +120,14 @@ class GetOrdersByWorker(generics.ListAPIView):
         return Order.objects.filter(users__in=[user.id], stage__role_id=user.role.id)
 
 
+class GetOrdersByUser(generics.ListAPIView):
+    serializer_class = OrderSerializer
+
+    def get_queryset(self):
+        print(self.kwargs.get('id'))
+        return Order.objects.filter(users__in=[self.kwargs.get('id')])
+
+
 class DeleteUserFromOrder(APIView):
     def post(self, request):
         order_uuid = request.data['order']
@@ -160,3 +179,8 @@ class AddUserToOrder(APIView):
         order.users.add(user)
         chat.users.add(user)
         return Response(status=200)
+
+
+class GetCheckLists(generics.ListAPIView):
+    serializer_class = CheckListDataShortSerializer
+    queryset = CheckListData.objects.all()

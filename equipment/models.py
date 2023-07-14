@@ -6,14 +6,7 @@ from PIL import Image, ImageDraw, ImageFont
 import qrcode
 from io import BytesIO
 # Create your models here.
-class EquipmentModel(models.Model):
-    name = models.CharField(max_length=255, blank=False, null=True)
-    image = models.FileField(upload_to='equipment/', blank=True, null=True)
-    file = models.FileField(upload_to='equipment/', blank=True, null=True)
 
-    class Meta:
-        verbose_name = 'Модель оборудования'
-        verbose_name_plural = 'Модель оборудования'
 
 class EquipmentFirm(models.Model):
     name = models.CharField(max_length=255, blank=False, null=True)
@@ -22,11 +15,22 @@ class EquipmentFirm(models.Model):
         verbose_name = 'Фирма оборудования'
         verbose_name_plural = 'Фирма оборудования'
 
+class EquipmentModel(models.Model):
+    firm = models.ForeignKey(EquipmentFirm, on_delete=models.CASCADE, blank=True, null=True)
+    name = models.CharField(max_length=255, blank=False, null=True)
+    image = models.FileField(upload_to='equipment/', blank=True, null=True)
+    file = models.FileField(upload_to='equipment/', blank=True, null=True)
+    file_name = models.CharField(max_length=255, blank=True, null=True)
+    show_to_client = models.BooleanField(default=False, blank=True)
+    description = models.TextField(blank=True, null=True)
+
+    class Meta:
+        verbose_name = 'Модель оборудования'
+        verbose_name_plural = 'Модель оборудования'
 
 
 class Equipment(models.Model):
     model = models.ForeignKey(EquipmentModel, on_delete=models.CASCADE, blank=True, null=True)
-    firm = models.ForeignKey(EquipmentFirm, on_delete=models.CASCADE, blank=True, null=True)
     object = models.ForeignKey('object.Object', on_delete=models.CASCADE, blank=True, null=True, related_name='equipments')
     serial_number = models.CharField(max_length=255, blank=True, null=True)
     qr = models.FileField(upload_to='equipment/', blank=True, null=True, editable=True)

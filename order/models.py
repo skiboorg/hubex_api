@@ -104,8 +104,9 @@ class Order(models.Model):
     date_done = models.DateField(blank=True, null=True)
     date_dead_line = models.DateField(blank=True, null=True)
     is_done = models.BooleanField(default=False, blank=True)
+    is_created_by_client = models.BooleanField(default=False, blank=True)
     class Meta:
-        ordering = ('-is_critical',)
+        ordering = ('-is_critical','-date_created_at','is_done')
         verbose_name = 'Заявка'
         verbose_name_plural = 'Заявки'
 
@@ -126,7 +127,7 @@ def order_post_save(sender, instance, created, **kwargs):
         default_type = Type.objects.get(is_default=True)
         default_status = Status.objects.get(is_default=True)
 
-        number = f'{create_random_string(3)}-{create_random_string(5)}-{create_random_string(digits=False, num=2)}'
+        number = 10000 + instance.id
         instance.number = number
         instance.stage = default_stage
         instance.type = default_type
@@ -140,6 +141,8 @@ class CheckListData(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, blank=True, null=True, related_name='check_lists')
     check_list = models.ForeignKey(CheckList, on_delete=models.CASCADE, blank=True, null=True)
     data = models.JSONField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
 
 
 class StageLog(models.Model):

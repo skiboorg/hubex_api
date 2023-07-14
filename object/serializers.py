@@ -32,19 +32,22 @@ class ObjectContactSerializer(serializers.ModelSerializer):
 
 
 class AdditionalEquipmentCategorySerializer(serializers.ModelSerializer):
+
     class Meta:
         model = AdditionalEquipmentCategory
         fields = '__all__'
 
 
 class AdditionalEquipmentModelSerializer(serializers.ModelSerializer):
+    category = AdditionalEquipmentCategorySerializer(many=False, required=False, read_only=True)
     class Meta:
         model = AdditionalEquipmentModel
         fields = '__all__'
 
 
+
+
 class ObjectAdditionalEquipmentSerializer(serializers.ModelSerializer):
-    category = AdditionalEquipmentCategorySerializer(many=False, required=False, read_only=True)
     model = AdditionalEquipmentModelSerializer(many=False, required=False, read_only=True)
     class Meta:
         model = ObjectAdditionalEquipment

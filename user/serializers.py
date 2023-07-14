@@ -35,7 +35,7 @@ class UserWorkTimeSerializer(serializers.ModelSerializer):
         model = UserWorkTime
         fields = '__all__'
     def get_title(self,obj):
-        return obj.order.number
+        return f'Заявка {obj.order.number}'
 
 class UserSaveSerializer(serializers.ModelSerializer):
     class Meta:

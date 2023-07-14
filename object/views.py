@@ -48,7 +48,6 @@ class ObjectViewSet(viewsets.ModelViewSet):
             for equipment in json_data['equipments']:
                 ObjectAdditionalEquipment.objects.create(object=obj,
                                                          model_id=equipment['model'],
-                                                         category_id=equipment['category'],
                                                          amount=equipment['amount'])
         else:
             print(serializer.errors)
@@ -63,4 +62,7 @@ class GetAddEqCategory(generics.ListAPIView):
 
 class GetAddEqModel(generics.ListAPIView):
     serializer_class = AdditionalEquipmentModelSerializer
-    queryset = AdditionalEquipmentModel.objects.all()
+
+
+    def get_queryset(self):
+        return AdditionalEquipmentModel.objects.filter(category_id=self.request.query_params.get('c_id'))

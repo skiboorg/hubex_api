@@ -77,6 +77,20 @@ class CheckListDataSerializer(serializers.ModelSerializer):
         model = CheckListData
         fields = '__all__'
 
+class CheckListDataShortSerializer(serializers.ModelSerializer):
+    order_number = serializers.SerializerMethodField()
+    check_list_name = serializers.SerializerMethodField()
+
+    def get_order_number(self,obj):
+        return obj.order.number
+
+    def get_check_list_name(self,obj):
+        return obj.check_list.name
+    class Meta:
+        model = CheckListData
+
+        exclude = ['data']
+
 class OrderShortSerializer(serializers.ModelSerializer):
     status = StatusSerializer(many=False, read_only=True, required=False)
     stage = StageShortSerializer(many=False, read_only=True, required=False)

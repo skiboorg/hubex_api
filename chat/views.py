@@ -24,9 +24,11 @@ class GetOrderChat(generics.RetrieveAPIView):
         return chat
 
 
+
 class AddMessageInOrderChat(APIView):
     def post(self,request):
         data = request.data
+        print(data)
         order_uuid = data['order']
         message = json.loads(data['message'])
         user_uuid = data['user']
@@ -37,7 +39,8 @@ class AddMessageInOrderChat(APIView):
 
         for f in request.FILES.getlist('file'):
             new_message.file = f
-            new_message.save(update_fields=['file'])
+            new_message.file_name = data['file_name'] if data['file_name'] != 'null' else None
+            new_message.save(update_fields=['file','file_name'])
 
         message = OrderChatMessageSerializer(new_message, many=False)
 
