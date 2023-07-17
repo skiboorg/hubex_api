@@ -9,6 +9,7 @@ urlpatterns = [
     path('order_add_user', views.AddUserToOrder.as_view()),
     path('order_delete_user', views.DeleteUserFromOrder.as_view()),
     path('order_checklists', views.GetCheckLists.as_view()),
+    path('order_checklist', views.GetCheckList.as_view()),
     path('', include(router.urls)),
 
 

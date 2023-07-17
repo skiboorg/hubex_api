@@ -36,8 +36,8 @@ class OrderFilter(django_filters.FilterSet):
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
-    filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
     lookup_field = 'number'
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
     filterset_class = OrderFilter
     # filterset_fields = [
     #     'is_critical',
@@ -180,7 +180,26 @@ class AddUserToOrder(APIView):
         chat.users.add(user)
         return Response(status=200)
 
+class CheckListFilter(django_filters.FilterSet):
 
+    q = django_filters.CharFilter(method='my_custom_filter', label="Search")
+
+    def my_custom_filter(self, queryset, name, value):
+        return queryset.filter(
+            Q(check_list__name__icontains=value) |
+            Q(order__number__icontains=value)
+        )
+
+    class Meta:
+        model = CheckListData
+        fields = ['created_at']
 class GetCheckLists(generics.ListAPIView):
     serializer_class = CheckListDataShortSerializer
     queryset = CheckListData.objects.all()
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
+    filterset_class = CheckListFilter
+
+class GetCheckList(generics.RetrieveAPIView):
+    serializer_class = CheckListDataSerializer
+    def get_object(self):
+        return CheckListData.objects.get(id=self.request.query_params.get('id'))

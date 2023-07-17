@@ -73,9 +73,13 @@ class StageLogSerializer(serializers.ModelSerializer):
 
 class CheckListDataSerializer(serializers.ModelSerializer):
     check_list= CheckListSerializer(many=False, read_only=True, required=False)
+    order_number = serializers.SerializerMethodField()
     class Meta:
         model = CheckListData
         fields = '__all__'
+
+    def get_order_number(self,obj):
+        return obj.order.number
 
 class CheckListDataShortSerializer(serializers.ModelSerializer):
     order_number = serializers.SerializerMethodField()

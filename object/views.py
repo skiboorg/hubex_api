@@ -3,12 +3,32 @@ from rest_framework.response import Response
 from .serializers import *
 from .models import *
 from rest_framework import generics, viewsets, parsers
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters
+import django_filters
+from django.db.models import Count, Q
 
+class ObjectFilter(django_filters.FilterSet):
+    q = django_filters.CharFilter(method='my_custom_filter', label="Search")
+
+    def my_custom_filter(self, queryset, name, value):
+        return queryset.filter(
+            Q(number__icontains=value) |
+            Q(id__icontains=value) |
+            Q(name__icontains=value) |
+            Q(address__icontains=value)
+        )
+
+    class Meta:
+        model = Object
+        fields = ['name']
 
 class ObjectViewSet(viewsets.ModelViewSet):
     queryset = Object.objects.all()
     serializer_class = ObjectSerializer
     lookup_field = 'number'
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
+    filterset_class = ObjectFilter
 
     def create(self, request, *args, **kwargs):
         print(request.data)
