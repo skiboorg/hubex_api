@@ -153,6 +153,21 @@ class GetUserByRole(generics.ListAPIView):
     def get_queryset(self):
         return User.objects.filter(role__id = self.request.query_params.get('id'))
 
+class DelNotify(APIView):
+    def get(self, request):
+        n_id = self.request.query_params.get('n_id', None)
+        if n_id:
+            notification = Notification.objects.get(id=n_id)
+            notification.delete()
+        return Response(status=200)
 
+class SetNotifyRead(APIView):
+    def get(self,request):
+        order_num = self.request.query_params.get('o_n', None)
+        if order_num:
+            notifications = Notification.objects.filter(order_number=order_num)
+            notifications.update(is_new=False)
+
+        return Response(status=200)
 
 

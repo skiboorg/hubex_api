@@ -90,3 +90,12 @@ class UserWorkTime(models.Model):
     end = models.DateTimeField(blank=True, null=True)
 
 
+class Notification(models.Model):
+    order_number = models.IntegerField(blank=True, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, related_name='notifications')
+    text = models.TextField(blank=True, null=True)
+    link = models.TextField(blank=True, null=True)
+    is_new = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+
+

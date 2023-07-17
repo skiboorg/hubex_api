@@ -38,7 +38,8 @@ class Equipment(models.Model):
     name = models.CharField(max_length=255, blank=False, null=True)
     date_in_work = models.DateField(blank=True, null=True)
     comment = models.TextField(blank=True, null=True)
-
+    is_warranty = models.BooleanField(default=False, blank=True)
+    warranty_ends = models.CharField(max_length=255, blank=True, null=True)
     def __str__(self):
         return f'{self.serial_number} - {self.name}'
 

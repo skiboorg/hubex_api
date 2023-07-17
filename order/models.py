@@ -122,6 +122,7 @@ class Order(models.Model):
     #     super().save(*args, **kwargs)
 
 def order_post_save(sender, instance, created, **kwargs):
+    from user.models import Notification,User
     if created:
         default_stage = Stage.objects.get(is_default=True)
         default_type = Type.objects.get(is_default=True)
@@ -134,6 +135,15 @@ def order_post_save(sender, instance, created, **kwargs):
         instance.status = default_status
         instance.save()
 
+        if instance.is_created_by_client:
+            admin_users = User.objects.filter(is_staff=True)
+            for user in admin_users:
+                Notification.objects.create(
+                    user=user,
+                    link=f'/order/{instance.number}',
+                    text=f'Создана заявка №{instance.number}',
+                    order_number=instance.number
+                )
 
 post_save.connect(order_post_save, sender=Order)
 

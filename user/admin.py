@@ -47,6 +47,7 @@ class UserAdmin(BaseUserAdmin):
 admin.site.register(User,UserAdmin)
 admin.site.register(UserWorkTime)
 admin.site.register(Role)
+admin.site.register(Notification)
 
 
 

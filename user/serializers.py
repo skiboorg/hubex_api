@@ -29,6 +29,12 @@ class RoleSerializer(serializers.ModelSerializer):
         model = Role
         fields = '__all__'
 
+
+class NotificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Notification
+        fields = '__all__'
+
 class UserWorkTimeSerializer(serializers.ModelSerializer):
     title = serializers.SerializerMethodField()
     class Meta:
@@ -51,6 +57,7 @@ class UserSaveSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     role = RoleSerializer(many=False,required=False,read_only=True)
     work_time = UserWorkTimeSerializer(many=True,required=False,read_only=True)
+    notifications = NotificationSerializer(many=True,required=False,read_only=True)
     class Meta:
         model = User
         fields = [
@@ -63,7 +70,8 @@ class UserSerializer(serializers.ModelSerializer):
             'role',
             'is_driving',
             'avatar',
-            'work_time'
+            'work_time',
+            'notifications',
 
 
         ]
