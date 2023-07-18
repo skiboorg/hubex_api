@@ -1,4 +1,4 @@
-
+import json
 from io import BytesIO
 from random import choices
 import string
@@ -9,6 +9,7 @@ from qrcode.image.styles.colormasks import RadialGradiantColorMask
 from qrcode.image.styledpil import StyledPilImage
 import qrcode.image.svg
 from qrcode.image.styles.moduledrawers.svg import SvgCircleDrawer
+import requests
 
 
 def makeThumb(image):
@@ -36,6 +37,21 @@ def create_random_string(digits=False, num=4):
 
 
 def generate_styled_qrcode(data):
+    headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+    json_data = {
+        "data":data,
+        "config":{
+        "body":"circle",
+        "logo":"http://buhler.onside.software:8010/media/logo.jpg"
+        },
+        "size":300,
+        "download":False,
+        "file":"png"
+}
+
+    response = requests.post('https://api.qrcode-monkey.com/qr/custom', json=json_data, headers=headers)
+    return response.content
+
     # Создаем QR-код
     qr = qrcode.QRCode(
         #version=1,

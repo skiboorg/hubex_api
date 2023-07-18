@@ -99,7 +99,7 @@ class Order(models.Model):
     equipment = models.ForeignKey('equipment.Equipment', on_delete=models.CASCADE, blank=True, null=True,related_name='orders')
     comment = models.TextField(blank=True, null=True)
 
-    date_created_at = models.DateField(auto_now_add=True, null=True)
+    date_created_at = models.DateTimeField(auto_now_add=True, null=True)
     date_assign_worker = models.DateField(blank=True, null=True)
     date_done = models.DateField(blank=True, null=True)
     date_dead_line = models.DateField(blank=True, null=True)
