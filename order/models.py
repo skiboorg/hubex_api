@@ -38,7 +38,7 @@ class InputField(models.Model):
     is_multiple_boolean = models.BooleanField(default=False, null=True)
     is_multiple_boolean_with_input = models.BooleanField(default=False, null=True)
     is_input = models.BooleanField(default=False, null=True)
-    is_date = models.BooleanField(default=False, null=True)
+    is_separator = models.BooleanField(default=False, null=True)
 
     def __str__(self):
         return self.name
@@ -160,8 +160,6 @@ class StageLog(models.Model):
     user = models.ForeignKey('user.User', on_delete=models.CASCADE, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     new_stage = models.ForeignKey(Stage, on_delete=models.CASCADE, blank=True, null=True)
-
-
 
 
 class OrderFile(models.Model):

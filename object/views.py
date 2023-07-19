@@ -26,7 +26,7 @@ class ObjectFilter(django_filters.FilterSet):
 class ObjectViewSet(viewsets.ModelViewSet):
     queryset = Object.objects.all()
     serializer_class = ObjectSerializer
-    lookup_field = 'number'
+    lookup_field = 'id'
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
     filterset_class = ObjectFilter
 

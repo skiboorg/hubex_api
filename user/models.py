@@ -58,6 +58,8 @@ class User(AbstractUser):
     avatar = models.FileField(upload_to='usr/ava',blank=True, null=True)
     is_driving = models.BooleanField(default=False, blank=True)
     is_online = models.BooleanField('Онлайн', default=False)
+    is_manager = models.BooleanField(default=False)
+    is_admin = models.BooleanField(default=False)
     channel = models.CharField(max_length=255, blank=True, null=True)
 
     USERNAME_FIELD = 'login'

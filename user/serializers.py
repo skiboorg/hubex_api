@@ -69,6 +69,7 @@ class UserSerializer(serializers.ModelSerializer):
             'email',
             'role',
             'is_driving',
+            'is_staff',
             'avatar',
             'work_time',
             'notifications',

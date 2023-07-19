@@ -4,6 +4,7 @@ from django.db import models
 from django.db.models.signals import post_save
 
 class Object(models.Model):
+    manager = models.ForeignKey('user.User',blank=True, null=True, on_delete=models.SET_NULL)
     number = models.CharField('Номер объекта\договора', max_length=255, blank=True, null=True, unique=True)
     serial_number = models.CharField(max_length=255, blank=True, null=True)
     longtitude = models.CharField(max_length=255, blank=True, null=True)
@@ -12,6 +13,8 @@ class Object(models.Model):
     work_time = models.CharField('часы работы', max_length=255, blank=True, null=True)
     comment = models.TextField(blank=True, null=True)
     address = models.TextField(blank=True, null=True)
+    is_sign = models.BooleanField(default=False)
+    is_potencial = models.BooleanField(default=False)
 
     address_comment = models.TextField(blank=True, null=True)
     client = models.ForeignKey('client.Client',blank=True, null=True, on_delete=models.CASCADE)
