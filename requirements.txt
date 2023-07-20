@@ -19,6 +19,7 @@ pytils
 segno
 qrcode
 aiogram
+openpyxl
 
 
 

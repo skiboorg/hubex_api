@@ -1,5 +1,7 @@
 import json
 from rest_framework.response import Response
+from rest_framework.views import APIView
+
 from .serializers import *
 from .models import *
 from rest_framework import generics, viewsets, parsers
@@ -86,3 +88,21 @@ class GetAddEqModel(generics.ListAPIView):
 
     def get_queryset(self):
         return AdditionalEquipmentModel.objects.filter(category_id=self.request.query_params.get('c_id'))
+
+
+class FillObject(APIView):
+    def get(self,request):
+        from openpyxl import load_workbook
+        wb = load_workbook(filename='object.xlsx')
+        sheet_obj = wb.active
+        max_row = sheet_obj.max_row
+
+        # Loop will print all columns name
+
+        for i in range(1, max_row + 1):
+            obj_number = sheet_obj.cell(row=i, column=1)
+            obj_address = sheet_obj.cell(row=i, column=2)
+            Object.objects.create(number=obj_number.value,address=obj_address.value)
+
+        return Response(status=200)
+

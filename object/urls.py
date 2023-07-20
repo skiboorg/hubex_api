@@ -6,5 +6,6 @@ urlpatterns = [
 
     path('object_equipment_category', views.GetAddEqCategory.as_view()),
     path('object_equipment_model', views.GetAddEqModel.as_view()),
+    path('object_fill', views.FillObject.as_view()),
 
 ]
