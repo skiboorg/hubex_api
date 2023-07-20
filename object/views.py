@@ -100,8 +100,10 @@ class FillObject(APIView):
         # Loop will print all columns name
 
         for i in range(1, max_row + 1):
+
             obj_number = sheet_obj.cell(row=i, column=1)
             obj_address = sheet_obj.cell(row=i, column=2)
+            print(obj_number.value,obj_address.value)
             Object.objects.create(number=obj_number.value,address=obj_address.value)
 
         return Response(status=200)

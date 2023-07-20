@@ -21,7 +21,7 @@ class Object(models.Model):
     image = models.FileField(upload_to='object/image', blank=True, null=True)
     # equipment = models.ManyToManyField('equipment.Equipment', blank=True)
     def __str__(self):
-        return f'{self.name}'
+        return f'{self.number} - {self.address}'
 
     class Meta:
         verbose_name = 'Объект'
