@@ -131,7 +131,8 @@ def order_post_save(sender, instance, created, **kwargs):
         number = 10000 + instance.id
         instance.number = number
         instance.stage = default_stage
-        instance.type = default_type
+        if not instance.type:
+            instance.type = default_type
         instance.status = default_status
         instance.save()
 

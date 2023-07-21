@@ -24,7 +24,26 @@ logger = logging.getLogger(__name__)
 
 
 
+class PagePermissionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PagePermission
+        fields = '__all__'
+
+class PageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Page
+        fields = '__all__'
+
+class RolePageSerializer(serializers.ModelSerializer):
+    page = PageSerializer(many=False, required=False, read_only=True)
+    permission = PagePermissionSerializer(many=False, required=False, read_only=True)
+    class Meta:
+        model = RolePage
+        fields = '__all__'
+
+
 class RoleSerializer(serializers.ModelSerializer):
+    pages = RolePageSerializer(many=True, required=False, read_only=True)
     class Meta:
         model = Role
         fields = '__all__'

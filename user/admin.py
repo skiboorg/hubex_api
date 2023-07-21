@@ -44,9 +44,24 @@ class UserAdmin(BaseUserAdmin):
          ),
         ('Permissions', {'fields': ('is_staff', 'is_superuser', 'groups',)}),)
 
+
+class RolePageInline(admin.TabularInline):
+    model = RolePage
+    extra = 0
+
+
+class RoleAdmin(admin.ModelAdmin):
+    model = Role
+    inlines = [RolePageInline]
+
+
+admin.site.register(Role, RoleAdmin)
+admin.site.register(PagePermission)
+admin.site.register(Page)
+
 admin.site.register(User,UserAdmin)
 admin.site.register(UserWorkTime)
-admin.site.register(Role)
+
 admin.site.register(Notification)
 
 

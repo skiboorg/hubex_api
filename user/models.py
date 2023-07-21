@@ -37,12 +37,36 @@ class UserManager(BaseUserManager):
         return self._create_user(login, password, **extra_fields)
 
 
+class PagePermission(models.Model):
+    name = models.CharField('Название доступа', max_length=20, blank=True, null=True)
+    can_open = models.BooleanField(default=False)
+    can_edit = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.name
+class Page(models.Model):
+    name = models.CharField('Название', max_length=20, blank=True, null=True)
+    url = models.CharField('Ссылка на страницу', max_length=20, blank=True, null=True)
+
+    def __str__(self):
+        return f'{self.name}'
+
+    class Meta:
+        ordering = ('name',)
+
 class Role(models.Model):
     name = models.CharField(max_length=50, blank=True, null=True)
 
     def __str__(self):
         return self.name
 
+class RolePage(models.Model):
+    role = models.ForeignKey(Role, on_delete=models.CASCADE, blank=True, null=True, related_name='pages')
+    page = models.ForeignKey(Page, on_delete=models.CASCADE, blank=True, null=True)
+    permission = models.ForeignKey(PagePermission, on_delete=models.CASCADE, blank=True, null=True)
+
+    def __str__(self):
+        return f'{self.role.name} - {self.page.name} - {self.permission.name}'
 class User(AbstractUser):
     username = None
     firstname = None
@@ -60,6 +84,7 @@ class User(AbstractUser):
     is_online = models.BooleanField('Онлайн', default=False)
     is_manager = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
+
     channel = models.CharField(max_length=255, blank=True, null=True)
 
     USERNAME_FIELD = 'login'

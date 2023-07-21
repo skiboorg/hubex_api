@@ -12,7 +12,7 @@ from rest_framework import filters
 from chat.models import OrderChat
 from user.models import User, UserWorkTime
 from django.db.models import Count, Q
-
+import datetime
 
 class OrderFilter(django_filters.FilterSet):
     created_at_gte = IsoDateTimeFilter(field_name="date_created_at", lookup_expr='gte')
@@ -73,6 +73,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=json_data)
         if serializer.is_valid():
             obj = serializer.save()
+            obj.type_id = json_data['type']
             obj.object_id = json_data['object']
             obj.equipment_id = json_data['equipment']
             obj.save()
@@ -100,7 +101,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         if is_done:
             done_status = Status.objects.get(is_done=True)
-            serializer.save(is_done=True, stage_id=None, status=done_status)
+            serializer.save(is_done=True, stage_id=None, status=done_status, date_done=datetime.datetime.now())
 
 class SaveCheckListData(APIView):
     def post(self, request):
@@ -203,3 +204,8 @@ class GetCheckList(generics.RetrieveAPIView):
     serializer_class = CheckListDataSerializer
     def get_object(self):
         return CheckListData.objects.get(id=self.request.query_params.get('id'))
+
+
+class OrderTypes(generics.ListAPIView):
+    serializer_class = TypeSerializer
+    queryset = Type.objects.all()

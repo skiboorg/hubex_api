@@ -95,13 +95,6 @@ class CheckListDataShortSerializer(serializers.ModelSerializer):
 
         exclude = ['data']
 
-class OrderShortSerializer(serializers.ModelSerializer):
-    status = StatusSerializer(many=False, read_only=True, required=False)
-    stage = StageShortSerializer(many=False, read_only=True, required=False)
-
-    class Meta:
-        model = Order
-        fields = '__all__'
 
 
 from equipment.models import *
@@ -150,7 +143,7 @@ class OrderShortSerializer(serializers.ModelSerializer):
     status = StatusSerializer(many=False, read_only=True, required=False)
     object = ObjectSerializer(many=False, read_only=True, required=False)
     equipment = EquipmentSerializer(many=False, read_only=True, required=False)
-
+    type = TypeSerializer(many=False, read_only=True, required=False)
     class Meta:
         model = Order
         fields = '__all__'

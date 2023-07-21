@@ -6,6 +6,7 @@ class Client(models.Model):
     comment = models.TextField('КОММЕНТАРИЙ',blank=True, null=True)
     fiz = models.BooleanField('ФИЗ ЛИЦО?', default=False)
     dealer = models.BooleanField('Дилер?', default=False)
+    is_panic = models.BooleanField(default=False)
     def __str__(self):
         return f'{self.name}'
 
