@@ -73,7 +73,10 @@ class OrderViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=json_data)
         if serializer.is_valid():
             obj = serializer.save()
-            obj.type_id = json_data['type']
+            type_id = json_data.get('type', None)
+            if type_id:
+                obj.type_id = json_data.get('type',None)
+
             obj.object_id = json_data['object']
             obj.equipment_id = json_data['equipment']
             obj.save()
