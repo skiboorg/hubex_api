@@ -11,6 +11,8 @@ urlpatterns = [
     path('order_checklists', views.GetCheckLists.as_view()),
     path('order_checklist', views.GetCheckList.as_view()),
     path('order_types', views.OrderTypes.as_view()),
+    path('order_delete_file/<pk>', views.OrderDeleteFile.as_view()),
+    path('order_update', views.OrderUpdate.as_view()),
     path('', include(router.urls)),
 
 

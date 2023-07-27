@@ -52,6 +52,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
     def get_serializer_class(self):
         full_mode = self.request.query_params.get('full', None)
+
         if full_mode:
             return OrderSerializer
         else:
@@ -79,6 +80,11 @@ class OrderViewSet(viewsets.ModelViewSet):
 
             obj.object_id = json_data['object']
             obj.equipment_id = json_data['equipment']
+            if json_data['is_critical']:
+                delta = 7
+            else:
+                delta = 14
+            obj.date_dead_line = (datetime.datetime.now() + datetime.timedelta(days=delta)).date()
             obj.save()
             for index,file in enumerate(request.FILES.getlist('files')):
                 OrderFile.objects.create(file=file,order=obj,text=files_descriptions[index])
@@ -88,6 +94,9 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    # def update(self, request, *args, **kwargs):
+    #     print(self.request.data)
 
     def perform_update(self, serializer):
         stage_id = self.request.data.get('stage_id', None)
@@ -104,7 +113,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         if is_done:
             done_status = Status.objects.get(is_done=True)
-            serializer.save(is_done=True, stage_id=None, status=done_status, date_done=datetime.datetime.now())
+            serializer.save(is_done=True, stage_id=None, status=done_status, date_done=(datetime.datetime.now()).date())
 
 class SaveCheckListData(APIView):
     def post(self, request):
@@ -212,3 +221,37 @@ class GetCheckList(generics.RetrieveAPIView):
 class OrderTypes(generics.ListAPIView):
     serializer_class = TypeSerializer
     queryset = Type.objects.all()
+
+class OrderDeleteFile(generics.DestroyAPIView):
+    serializer_class = OrderFile
+    queryset = OrderFile.objects.all()
+
+class OrderUpdate(APIView):
+    def post(self, request):
+        order = Order.objects.get(number=self.request.query_params.get('number'))
+        print(request.data)
+        setattr(request.data, '_mutable', True)
+
+        try:
+            request.data.pop('files')
+            files_descriptions = request.data.pop('descriptions')
+        except:
+            files_descriptions = []
+        data = json.loads(json.dumps(request.data))
+        json_data = {}
+        for dat in data:
+            json_data[dat] = json.loads(data[dat])
+        print(json_data)
+        order.object_id = json_data['object']
+        order.equipment_id = json_data['equipment']
+        order.type_id = json_data['type']
+        order.is_critical = json_data['is_critical']
+        order.comment = json_data['comment']
+        order.date_dead_line = json_data['date_dead_line']
+        order.save()
+        for index, file in enumerate(request.FILES.getlist('files')):
+            OrderFile.objects.create(file=file, order=order, text=files_descriptions[index])
+
+        return Response(status=200)
+
+

@@ -39,9 +39,10 @@ class Equipment(models.Model):
     date_in_work = models.DateField(blank=True, null=True)
     comment = models.TextField(blank=True, null=True)
     is_warranty = models.BooleanField(default=False, blank=True)
+    is_service_book_sign = models.BooleanField(default=False, blank=True)
     warranty_ends = models.DateField(blank=True, null=True)
     def __str__(self):
-        return f'{self.serial_number} - {self.name}'
+        return f'S/N :{self.serial_number} | Название :{self.name}'
 
     def save(self, *args, **kwargs):
         # serial_number = f'{create_random_string(3)}-{create_random_string(5)}-{create_random_string(True,2)}'

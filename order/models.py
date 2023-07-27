@@ -110,6 +110,9 @@ class Order(models.Model):
         verbose_name = 'Заявка'
         verbose_name_plural = 'Заявки'
 
+    def __str__(self):
+        return f'Заявка {self.number}'
+
     # def save(self, *args, **kwargs):
     #
     #     if not self.stage:
