@@ -110,11 +110,22 @@ def user_post_save(sender, instance, created, **kwargs):
 post_save.connect(user_post_save, sender=User)
 
 
+class UserWorkTimeType(models.Model):
+    name = models.CharField('Название', max_length=100, blank=True, null=True)
+
+
+    def __str__(self):
+        return self.name
+
 class UserWorkTime(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, related_name='work_time')
+    type = models.ForeignKey(UserWorkTimeType, on_delete=models.CASCADE, blank=True, null=True)
     order = models.ForeignKey('order.Order', on_delete=models.CASCADE, blank=True, null=True)
     start = models.DateTimeField(blank=True, null=True)
     end = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        ordering = ('start',)
 
 
 class Notification(models.Model):

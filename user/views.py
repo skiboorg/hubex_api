@@ -146,6 +146,10 @@ class GetRoles(generics.ListCreateAPIView):
     # permission_classes = [IsAuthenticated]
     serializer_class = RoleSerializer
     queryset = Role.objects.all()
+class GetTimeTypes(generics.ListCreateAPIView):
+    # permission_classes = [IsAuthenticated]
+    serializer_class = UserWorkTimeTypeSerializer
+    queryset = UserWorkTimeType.objects.all()
 
 class GetUserByRole(generics.ListAPIView):
     # permission_classes = [IsAuthenticated]

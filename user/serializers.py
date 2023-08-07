@@ -29,6 +29,11 @@ class PagePermissionSerializer(serializers.ModelSerializer):
         model = PagePermission
         fields = '__all__'
 
+class UserWorkTimeTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserWorkTimeType
+        fields = '__all__'
+
 class PageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Page
@@ -56,6 +61,7 @@ class NotificationSerializer(serializers.ModelSerializer):
 
 class UserWorkTimeSerializer(serializers.ModelSerializer):
     title = serializers.SerializerMethodField()
+    type = UserWorkTimeTypeSerializer(many=False, required=False, read_only=True)
     class Meta:
         model = UserWorkTime
         fields = '__all__'

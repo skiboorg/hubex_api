@@ -61,6 +61,7 @@ admin.site.register(Page)
 
 admin.site.register(User,UserAdmin)
 admin.site.register(UserWorkTime)
+admin.site.register(UserWorkTimeType)
 
 admin.site.register(Notification)
 

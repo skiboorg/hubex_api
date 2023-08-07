@@ -162,7 +162,7 @@ class AddUsersToOrder(APIView):
         order_users = request.data['users']
         order = Order.objects.get(uuid=order_uuid)
         chat, _ = OrderChat.objects.get_or_create(order=order)
-        print(order)
+        print(request.data)
 
         staff_users = User.objects.filter(is_staff=True)
         for staff_user in staff_users:
@@ -176,6 +176,7 @@ class AddUsersToOrder(APIView):
                 UserWorkTime.objects.create(
                     user=user,
                     order=order,
+                    type_id=order_user['events']['type'],
                     start=order_user['events']['start'],
                     end=order_user['events']['end'],
                 )
