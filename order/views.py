@@ -132,6 +132,12 @@ class GetOrdersByWorker(generics.ListAPIView):
         print(user.role.id)
         return Order.objects.filter(users__in=[user.id], stage__role_id=user.role.id)
 
+class GetOrdersHistoryByObject(generics.ListAPIView):
+    serializer_class = OrderSerializer
+
+    def get_queryset(self):
+        return Order.objects.filter(object_id=self.kwargs.get('object_id'), is_done=True)
+
 
 class GetOrdersByUser(generics.ListAPIView):
     serializer_class = OrderSerializer

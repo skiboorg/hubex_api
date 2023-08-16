@@ -104,6 +104,8 @@ class Order(models.Model):
     date_done = models.DateField(blank=True, null=True)
     date_dead_line = models.DateField(blank=True, null=True)
     is_done = models.BooleanField(default=False, blank=True)
+    is_time_left = models.BooleanField(default=False, blank=True)
+    is_order_for_additional_equipment = models.BooleanField(default=False, blank=True)
     is_created_by_client = models.BooleanField(default=False, blank=True)
     class Meta:
         ordering = ('-is_critical','-date_created_at','is_done')

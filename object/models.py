@@ -46,6 +46,7 @@ def obj_file_post_save(sender, instance, created, **kwargs):
 post_save.connect(obj_file_post_save, sender=ObjectFile)
 
 class ObjectContact(models.Model):
+    order_num = models.IntegerField(default=1, null=True)
     name = models.CharField('ФИО', max_length=255, blank=True, null=True)
     phone = models.CharField('Телефон', max_length=255, blank=True, null=True)
     email = models.CharField('Email', max_length=255, blank=True, null=True)
@@ -56,6 +57,7 @@ class ObjectContact(models.Model):
         return f'{self.name}'
 
     class Meta:
+        ordering = ('order_num',)
         verbose_name = 'Контакт объекта'
         verbose_name_plural = 'Контакты объекта'
 

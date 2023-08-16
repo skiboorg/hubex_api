@@ -84,7 +84,7 @@ class User(AbstractUser):
     is_online = models.BooleanField('Онлайн', default=False)
     is_manager = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
-
+    subscription_info = models.TextField(blank=True, null=True)
     channel = models.CharField(max_length=255, blank=True, null=True)
 
     USERNAME_FIELD = 'login'

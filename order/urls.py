@@ -3,6 +3,7 @@ from . import views
 from .router import router
 urlpatterns = [
     path('save_check_list_data', views.SaveCheckListData.as_view()),
+    path('order_history_by_object/<int:object_id>', views.GetOrdersHistoryByObject.as_view()),
     path('order_by_worker/<int:id>', views.GetOrdersByWorker.as_view()),
     path('order_by_user/<int:id>', views.GetOrdersByUser.as_view()),
     path('order_add_users', views.AddUsersToOrder.as_view()),
