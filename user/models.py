@@ -121,11 +121,12 @@ class UserWorkTime(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, related_name='work_time')
     type = models.ForeignKey(UserWorkTimeType, on_delete=models.CASCADE, blank=True, null=True)
     order = models.ForeignKey('order.Order', on_delete=models.CASCADE, blank=True, null=True)
-    start = models.DateTimeField(blank=True, null=True)
-    end = models.DateTimeField(blank=True, null=True)
-
+    date = models.DateField(blank=True, null=True)
+    start_time = models.TimeField(blank=True, null=True)
+    end_time = models.TimeField(blank=True, null=True)
+    is_hidden = models.BooleanField(default=False, null=False)
     class Meta:
-        ordering = ('start',)
+        ordering = ('date','start_time')
 
 
 class Notification(models.Model):

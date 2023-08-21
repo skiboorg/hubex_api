@@ -71,6 +71,16 @@ class AddUser(APIView):
         return Response(status=status.HTTP_201_CREATED)
 
 
+class HideUnhideTime(APIView):
+    def get(self, request ):
+        print(self.request.query_params.get('id'))
+        time = UserWorkTime.objects.get(id=self.request.query_params.get('id'))
+        if time.is_hidden:
+            time.is_hidden = False
+        else:
+            time.is_hidden = True
+        time.save()
+        return Response(status=200)
 class UpdateUser(APIView):
     def post(self,request,*args,**kwargs):
         print(request.data)
@@ -156,6 +166,36 @@ class GetUserByRole(generics.ListAPIView):
     serializer_class = UserSerializer
     def get_queryset(self):
         return User.objects.filter(role__id = self.request.query_params.get('id'))
+
+class FindByWorkTime(APIView):
+    def get(self, request):
+        result = []
+        work_time = UserWorkTime.objects.filter(date=self.request.query_params.get('date'))
+
+        for item in work_time:
+            result.append({
+                'order_id': item.order.id,
+                'order_number': item.order.number,
+                'user_fio': item.user.fio,
+                'user_role': item.user.role.name,
+                'time_type': item.type.name,
+                'date':item.start_time,
+                'start_time':item.start_time,
+                'end_time':item.end_time,
+            })
+        return Response({'result':result},status=200)
+
+class GetWorkEvents(APIView):
+    def get(self, request):
+        events = []
+        work_time = UserWorkTime.objects.all()
+        for item in work_time:
+            if item.date:
+                print(item.date)
+                date = str(item.date).replace('-', '/')
+                if not date in events:
+                    events.append(date)
+        return Response({'events': events}, status=200)
 
 class DelNotify(APIView):
     def get(self, request):

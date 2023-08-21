@@ -10,9 +10,12 @@ urlpatterns = [
     path('by_role', views.GetUserByRole.as_view()),
     path('roles', views.GetRoles.as_view()),
     path('time_types', views.GetTimeTypes.as_view()),
+    path('find_by_work_time', views.FindByWorkTime.as_view()),
+    path('get_work_events', views.GetWorkEvents.as_view()),
 
     path('add_user', views.AddUser.as_view()),
     path('update_user', views.UpdateUser.as_view()),
+    path('hide_time', views.HideUnhideTime.as_view()),
 
     path('get_user/<uuid>', views.GetUserByUuid.as_view()),
     path('delete_user/<uuid>', views.DeleteUser.as_view()),

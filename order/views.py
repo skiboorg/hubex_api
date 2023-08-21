@@ -132,6 +132,13 @@ class GetOrdersByWorker(generics.ListAPIView):
         print(user.role.id)
         return Order.objects.filter(users__in=[user.id], stage__role_id=user.role.id)
 
+class GetOrdersByWorkerForCalendar(generics.ListAPIView):
+    serializer_class = OrderSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        print(user.role.id)
+        return Order.objects.filter(users__in=[user.id])
 class GetOrdersHistoryByObject(generics.ListAPIView):
     serializer_class = OrderSerializer
 
@@ -183,14 +190,16 @@ class AddUsersToOrder(APIView):
                     user=user,
                     order=order,
                     type_id=order_user['events']['type'],
-                    start=order_user['events']['start'],
-                    end=order_user['events']['end'],
+                    date = order_user['events']['date'].replace('/','-'),
+                    start_time=order_user['events']['start_time'],
+                    end_time=order_user['events']['end_time'],
                 )
             print(order_user)
         return Response(status=200)
 
 class AddUserToOrder(APIView):
     def post(self, request):
+        print(request.data)
         order_uuid = request.data['order']
         order_user = request.data['user']
         order = Order.objects.get(uuid=order_uuid)

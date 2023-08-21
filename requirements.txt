@@ -21,6 +21,8 @@ qrcode
 aiogram
 openpyxl
 django-webpush
+flask
+python-telegram-bot
 
 
 

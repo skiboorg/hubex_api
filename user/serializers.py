@@ -11,6 +11,8 @@ from rest_framework import exceptions, serializers, status, generics
 from .models import *
 from djoser.conf import settings
 
+from order.models import Order
+
 from django.contrib.auth.tokens import default_token_generator
 
 # from .services import send_email
@@ -59,14 +61,23 @@ class NotificationSerializer(serializers.ModelSerializer):
         model = Notification
         fields = '__all__'
 
+
+
 class UserWorkTimeSerializer(serializers.ModelSerializer):
+
     title = serializers.SerializerMethodField()
+
     type = UserWorkTimeTypeSerializer(many=False, required=False, read_only=True)
+
     class Meta:
         model = UserWorkTime
         fields = '__all__'
     def get_title(self,obj):
         return f'Заявка {obj.order.number}'
+
+
+
+
 
 class UserSaveSerializer(serializers.ModelSerializer):
     class Meta:
