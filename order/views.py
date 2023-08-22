@@ -136,9 +136,9 @@ class GetOrdersByWorkerForCalendar(generics.ListAPIView):
     serializer_class = OrderSerializer
 
     def get_queryset(self):
-        user = self.request.user
-        print(user.role.id)
-        return Order.objects.filter(users__in=[user.id])
+        user_id = self.request.query_params.get('user_id')
+        print(user_id)
+        return Order.objects.filter(users__in=[user_id])
 class GetOrdersHistoryByObject(generics.ListAPIView):
     serializer_class = OrderSerializer
 
