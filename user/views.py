@@ -185,6 +185,21 @@ class FindByWorkTime(APIView):
             })
         return Response({'result':result},status=200)
 
+
+class GetOrdersByWorkerForCalendar(APIView):
+
+    def get(self,request):
+        user_id = self.request.query_params.get('user_id')
+        date = self.request.query_params.get('date').replace('/','-')
+        print(user_id)
+        print(date)
+        work_times = UserWorkTime.objects.filter(user_id=user_id,date=date)
+        print(work_times)
+        result = []
+        for work_time in work_times:
+            result.append(UserWorkTimeSerializer(work_time).data)
+        return Response({'result':result}, status=200)
+
 class GetWorkEvents(APIView):
     def get(self, request):
         events = []

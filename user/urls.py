@@ -11,6 +11,7 @@ urlpatterns = [
     path('roles', views.GetRoles.as_view()),
     path('time_types', views.GetTimeTypes.as_view()),
     path('find_by_work_time', views.FindByWorkTime.as_view()),
+    path('find_worker_time_for_calendar', views.GetOrdersByWorkerForCalendar.as_view()),
     path('get_work_events', views.GetWorkEvents.as_view()),
 
     path('add_user', views.AddUser.as_view()),
