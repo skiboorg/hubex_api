@@ -169,20 +169,54 @@ class GetUserByRole(generics.ListAPIView):
 
 class FindByWorkTime(APIView):
     def get(self, request):
-        result = []
+        orders=[]
+        result = [
+            # {
+            #     "order_id": 0,
+            #     "work_times":[]
+            # },
+            # {
+            #     "order_id": 24,
+            #     "work_times": []
+            # },
+
+        ]
         work_time = UserWorkTime.objects.filter(date=self.request.query_params.get('date'))
+        for item in work_time:
+            if not item.order.id in orders:
+                orders.append(item.order.id)
+                result.append(
+                    {
+                        "order_id": item.order.id,
+                        'order_number': item.order.number,
+                        'order_created': item.order.date_created_at,
+                        'status_name': item.order.status.name,
+                        'status_bg_color': item.order.status.bg_color,
+                        'status_text_color': item.order.status.text_color,
+                        'stage_name': item.order.stage.name,
+                        'object_address': item.order.object.address,
+                        'object_number': item.order.object.number,
+                        "work_times": []
+                    },
+                )
 
         for item in work_time:
-            result.append({
-                'order_id': item.order.id,
-                'order_number': item.order.number,
-                'user_fio': item.user.fio,
-                'user_role': item.user.role.name,
-                'time_type': item.type.name,
-                'date':item.start_time,
-                'start_time':item.start_time,
-                'end_time':item.end_time,
-            })
+            print(item)
+            for result_item in result:
+                print('wqewqe')
+                if result_item['order_id'] == item.order.id:
+                    result_item['work_times'].append({
+                        'order_id': item.order.id,
+                        'order_number': item.order.number,
+                        'user_fio': item.user.fio,
+                        'user_role': item.user.role.name,
+                        'time_type': item.type.name,
+                        'date':item.date,
+                        'start_time':item.start_time,
+                        'end_time':item.end_time,
+                    })
+
+        print(result)
         return Response({'result':result},status=200)
 
 

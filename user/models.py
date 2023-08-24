@@ -126,7 +126,7 @@ class UserWorkTime(models.Model):
     end_time = models.TimeField(blank=True, null=True)
     is_hidden = models.BooleanField(default=False, null=False)
     class Meta:
-        ordering = ('date','start_time')
+        ordering = ('order__number','date','start_time')
 
 
 class Notification(models.Model):
