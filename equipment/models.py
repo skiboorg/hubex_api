@@ -47,6 +47,7 @@ class Equipment(models.Model):
     is_warranty = models.BooleanField(default=False, blank=True)
     is_service_book_sign = models.BooleanField(default=False, blank=True)
     warranty_ends = models.DateField(blank=True, null=True)
+    service_book_sign_date = models.DateField(blank=True, null=True)
     def __str__(self):
         return f'S/N :{self.serial_number} | Название :{self.name}'
 
