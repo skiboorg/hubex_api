@@ -11,6 +11,9 @@ from io import BytesIO
 class EquipmentFirm(models.Model):
     name = models.CharField(max_length=255, blank=False, null=True)
 
+    def __str__(self):
+        return f'{self.name}'
+
     class Meta:
         verbose_name = 'Фирма оборудования'
         verbose_name_plural = 'Фирма оборудования'
@@ -23,6 +26,9 @@ class EquipmentModel(models.Model):
     file_name = models.CharField(max_length=255, blank=True, null=True)
     show_to_client = models.BooleanField(default=False, blank=True)
     description = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return f'{self.name} | Фирма: {self.firm}'
 
     class Meta:
         verbose_name = 'Модель оборудования'

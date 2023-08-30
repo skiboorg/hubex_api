@@ -254,6 +254,17 @@ class DelNotify(APIView):
             notification.delete()
         return Response(status=200)
 
+class UpdateUserWorkTime(APIView):
+    def post(self,request):
+        data = request.data
+
+        work_times = data['work_time']
+        for work_time in work_times:
+            user_work_time = UserWorkTime.objects.get(id=work_time['id'])
+            user_work_time.start_time = work_time['start_time']
+            user_work_time.end_time = work_time['end_time']
+            user_work_time.save()
+        return Response(status=200)
 class SetNotifyRead(APIView):
     def get(self,request):
         order_num = self.request.query_params.get('o_n', None)

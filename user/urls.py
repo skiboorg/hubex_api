@@ -20,6 +20,7 @@ urlpatterns = [
 
     path('get_user/<uuid>', views.GetUserByUuid.as_view()),
     path('delete_user/<uuid>', views.DeleteUser.as_view()),
+    path('update_user_work_time', views.UpdateUserWorkTime.as_view()),
     path('set_notify_read', views.SetNotifyRead.as_view()),
     path('del_notify', views.DelNotify.as_view()),
 
