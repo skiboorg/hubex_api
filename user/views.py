@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from .serializers import *
 from .models import *
 from rest_framework import generics, viewsets, parsers
-
+from .services import send_tg_mgs
 
 import logging
 logger = logging.getLogger(__name__)
@@ -259,11 +259,17 @@ class UpdateUserWorkTime(APIView):
         data = request.data
 
         work_times = data['work_time']
+        user = None
+        order_num = None
         for work_time in work_times:
             user_work_time = UserWorkTime.objects.get(id=work_time['id'])
+            if not user:
+                user = user_work_time.user
+                order_num = user_work_time.order.number
             user_work_time.start_time = work_time['start_time']
             user_work_time.end_time = work_time['end_time']
             user_work_time.save()
+        send_tg_mgs(user.telega_id,f'Время выезда изменено по заявке {order_num}')
         return Response(status=200)
 class SetNotifyRead(APIView):
     def get(self,request):

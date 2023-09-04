@@ -32,6 +32,8 @@ class UserAdmin(BaseUserAdmin):
          {'fields': (
              'role',
              'email',
+             'telega',
+             'telega_id',
                 "fio",
                 "phone",
                 "is_driving",

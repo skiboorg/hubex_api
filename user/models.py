@@ -76,6 +76,8 @@ class User(AbstractUser):
     uuid = models.UUIDField(default=uuid.uuid4, db_index=True)
     login = models.CharField('Логин', max_length=255, blank=True, null=True, unique=True)
     email = models.CharField('Почта', max_length=255, blank=True, null=True)
+    telega = models.CharField('Телега', max_length=255, blank=True, null=True)
+    telega_id = models.CharField(max_length=255, blank=True, null=True)
     fio = models.CharField('ФИО', max_length=255, blank=True, null=True)
     phone = models.CharField('Телефон', max_length=255, blank=True, null=True)
     plain_password = models.CharField(max_length=255, blank=True, null=True)

@@ -121,6 +121,7 @@ class UserSerializer(serializers.ModelSerializer):
             'avatar',
             'work_time',
             'notifications',
+            'telega',
 
 
         ]

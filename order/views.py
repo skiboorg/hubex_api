@@ -24,7 +24,8 @@ class OrderFilter(django_filters.FilterSet):
             Q(number__icontains=value) |
             Q(object__name__icontains=value) |
             Q(equipment__model__name__icontains=value) |
-            Q(equipment__serial_number__icontains=value)
+            Q(equipment__serial_number__icontains=value) |
+            Q(object__address__icontains=value)
         )
 
     class Meta:
