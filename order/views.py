@@ -51,6 +51,8 @@ class OrderViewSet(viewsets.ModelViewSet):
     #     print('serializer.validated_data',serializer.validated_data)
     #     serializer.save()
 
+
+
     def get_serializer_class(self):
         full_mode = self.request.query_params.get('full', None)
 
@@ -114,7 +116,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         if is_done:
             done_status = Status.objects.get(is_done=True)
-            serializer.save(is_done=True, stage_id=None, status=done_status, date_done=(datetime.datetime.now()).date())
+            serializer.save(is_done=True, status=done_status, date_done=(datetime.datetime.now()).date())
 
 class SaveCheckListData(APIView):
     def post(self, request):

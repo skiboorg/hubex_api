@@ -102,6 +102,24 @@ class UserSaveSerializer(serializers.ModelSerializer):
 
         ]
 
+class UserShortSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = [
+            "id",
+                "uuid",
+                "login",
+                "fio",
+                "phone",
+            'email',
+            'role',
+            'is_driving',
+            'is_staff',
+            'avatar',
+            'telega',
+
+
+        ]
 class UserSerializer(serializers.ModelSerializer):
     role = RoleSerializer(many=False,required=False,read_only=True)
     work_time = UserWorkTimeSerializer(many=True,required=False,read_only=True)

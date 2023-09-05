@@ -8,8 +8,8 @@ from .models import *
 #         fields = '__all__'
 
 class OrderChatMessageSerializer(serializers.ModelSerializer):
-    from user.serializers import UserSerializer
-    user = UserSerializer(many=False, required=False, read_only=True)
+    from user.serializers import UserShortSerializer
+    user = UserShortSerializer(many=False, required=False, read_only=True)
     class Meta:
         model = OrderChatMessage
         fields = '__all__'

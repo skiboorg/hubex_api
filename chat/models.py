@@ -20,7 +20,7 @@ class OrderChatMessage(models.Model):
     file_name = models.CharField( max_length=255, blank=True, null=True)
     is_new = models.BooleanField('Не прочитанное сообщение', default=True)
     file_saved = models.BooleanField(default=False, blank=True)
-    createdAt = models.DateTimeField(auto_now_add=True)
+    createdAt = models.DateTimeField(auto_now_add=True, null=True)
     size = models.CharField(max_length=255, blank=True, null=True)
     class Meta:
         ordering = ('createdAt',)
