@@ -65,7 +65,8 @@ class CheckListInput(models.Model):
 class Stage(models.Model):
     name = models.CharField(max_length=255, blank=True, null=True)
     comment = models.TextField(blank=True, null=True)
-    role = models.ForeignKey('user.Role', on_delete=models.SET_NULL, blank=True, null=True)
+    role = models.ManyToManyField('user.Role', blank=True, null=True)
+    role_can_interact = models.ManyToManyField('user.Role', blank=True, null=True,related_name='role_can_interact')
     status = models.ForeignKey(Status, on_delete=models.CASCADE, blank=True, null=True)
     check_list = models.ForeignKey(CheckList, on_delete=models.CASCADE, blank=True, null=True)
     is_default = models.BooleanField(default=False, null=True)
