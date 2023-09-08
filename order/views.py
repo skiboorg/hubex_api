@@ -23,6 +23,7 @@ class OrderFilter(django_filters.FilterSet):
         return queryset.filter(
             Q(number__icontains=value) |
             Q(object__name__icontains=value) |
+            Q(object__number__icontains=value) |
             Q(equipment__model__name__icontains=value) |
             Q(equipment__serial_number__icontains=value) |
             Q(object__address__icontains=value)

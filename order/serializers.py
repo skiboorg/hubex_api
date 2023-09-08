@@ -74,12 +74,28 @@ class StageLogSerializer(serializers.ModelSerializer):
 class CheckListDataSerializer(serializers.ModelSerializer):
     check_list= CheckListSerializer(many=False, read_only=True, required=False)
     order_number = serializers.SerializerMethodField()
+    equipment_sn = serializers.SerializerMethodField()
+    equipment_model = serializers.SerializerMethodField()
+    object_add_equipment = serializers.SerializerMethodField()
     class Meta:
         model = CheckListData
         fields = '__all__'
 
     def get_order_number(self,obj):
         return obj.order.number
+    def get_equipment_sn(self,obj):
+        if obj.order.equipment:
+            return obj.order.equipment.serial_number
+    def get_equipment_model(self,obj):
+        if obj.order.equipment:
+            return obj.order.equipment.model.name
+
+    def get_object_add_equipment(self,obj):
+        from object.serializers import ObjectAdditionalEquipmentSerializer
+        if obj.order.object:
+            print(obj.order.object.additional_equipments.all())
+            return ObjectAdditionalEquipmentSerializer(obj.order.object.additional_equipments.all(),many=True).data
+
 
 class CheckListDataShortSerializer(serializers.ModelSerializer):
     order_number = serializers.SerializerMethodField()
