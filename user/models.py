@@ -45,8 +45,8 @@ class PagePermission(models.Model):
     def __str__(self):
         return self.name
 class Page(models.Model):
-    name = models.CharField('Название', max_length=20, blank=True, null=True)
-    url = models.CharField('Ссылка на страницу', max_length=20, blank=True, null=True)
+    name = models.CharField('Название', max_length=255, blank=True, null=True)
+    url = models.CharField('Ссылка на страницу', max_length=255, blank=True, null=True)
 
     def __str__(self):
         return f'{self.name}'
