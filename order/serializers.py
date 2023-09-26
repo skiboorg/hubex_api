@@ -29,6 +29,36 @@ class TypeSerializer(serializers.ModelSerializer):
         model = Type
         fields = '__all__'
 
+class WorkTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WorkType
+        fields = '__all__'
+
+class CheckListTableInputFieldSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CheckListTableInputField
+        fields = '__all__'
+
+
+class CheckListTableInputSerializer(serializers.ModelSerializer):
+    input = CheckListTableInputFieldSerializer(many=False, read_only=True, required=False)
+    class Meta:
+        model = CheckListTableInput
+        fields = '__all__'
+class CheckListTableDataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CheckListTableData
+        fields = '__all__'
+
+
+class CheckListTableSerializer(serializers.ModelSerializer):
+    check_list_table_inputs = CheckListTableInputSerializer(many=True, read_only=True, required=False)
+
+    class Meta:
+        model = CheckListTable
+        fields = '__all__'
+
+
 class InputFieldSerializer(serializers.ModelSerializer):
     class Meta:
         model = InputField
@@ -44,13 +74,20 @@ class CheckListInputSerializer(serializers.ModelSerializer):
 
 class CheckListSerializer(serializers.ModelSerializer):
     inputs = CheckListInputSerializer(many=True, read_only=True, required=False)
+    check_list_tables = CheckListTableSerializer(many=True, read_only=True, required=False)
     class Meta:
         model = CheckList
         fields = '__all__'
 
+class StageFirmSelectSerializer(serializers.ModelSerializer):
+    check_list = CheckListSerializer(many=False, read_only=True, required=False)
+    class Meta:
+        model = StageFirmSelect
+        fields = '__all__'
 
 class StageSerializer(serializers.ModelSerializer):
     from user.serializers import RoleSerializer
+    firms = StageFirmSelectSerializer(many=True, read_only=True, required=False)
     check_list = CheckListSerializer(many=False, read_only=True, required=False)
     add_user_role = RoleSerializer(many=False, read_only=True, required=False)
     class Meta:
@@ -145,6 +182,7 @@ class OrderSerializer(serializers.ModelSerializer):
     from object.serializers import ObjectSerializer
 
     type = TypeSerializer(many=False, read_only=True, required=False)
+    work_type = WorkTypeSerializer(many=False, read_only=True, required=False)
     status = StatusSerializer(many=False, read_only=True, required=False)
     stage = StageSerializer(many=False, read_only=True, required=False)
     object = ObjectSerializer(many=False, read_only=True, required=False)
@@ -164,6 +202,7 @@ class OrderShortSerializer(serializers.ModelSerializer):
     object = ObjectSerializer(many=False, read_only=True, required=False)
     equipment = EquipmentSerializer(many=False, read_only=True, required=False)
     type = TypeSerializer(many=False, read_only=True, required=False)
+    work_type = WorkTypeSerializer(many=False, read_only=True, required=False)
     class Meta:
         model = Order
         fields = '__all__'

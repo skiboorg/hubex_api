@@ -1,14 +1,16 @@
 import json
+
+import django_filters
+from django.db.models import Q
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters
+from rest_framework import generics, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .serializers import *
 from .models import *
-from rest_framework import generics, viewsets, parsers
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters
-import django_filters
-from django.db.models import Count, Q
+from .serializers import *
+
 
 class ObjectFilter(django_filters.FilterSet):
     q = django_filters.CharFilter(method='my_custom_filter', label="Search")
@@ -84,12 +86,32 @@ class GetAddEqCategory(generics.ListAPIView):
 
 class GetAddEqModel(generics.ListAPIView):
     serializer_class = AdditionalEquipmentModelSerializer
-
-
     def get_queryset(self):
         return AdditionalEquipmentModel.objects.filter(category_id=self.request.query_params.get('c_id'))
 
 
+
+
+class DeleteAddEq(APIView):
+    def post(self,request):
+
+        obj = ObjectAdditionalEquipment.objects.get(id=request.data['e_id'])
+        obj.delete()
+        return Response(status=200)
+
+class DeleteFile(APIView):
+    def post(self,request):
+        print(request.data)
+        obj = ObjectFile.objects.get(id=request.data['f_id'])
+        obj.delete()
+        return Response(status=200)
+
+class DeleteContact(APIView):
+    def post(self,request):
+        print(request.data)
+        obj = ObjectContact.objects.get(id=request.data['c_id'])
+        obj.delete()
+        return Response(status=200)
 class FillObject(APIView):
     def get(self,request):
         from openpyxl import load_workbook
@@ -108,3 +130,72 @@ class FillObject(APIView):
 
         return Response(status=200)
 
+class ObjectUpdate(APIView):
+    def post(self, request):
+        obj = Object.objects.get(id=self.request.query_params.get('id'))
+
+        setattr(request.data, '_mutable', True)
+
+        try:
+            request.data.pop('files')
+            files_descriptions = request.data.pop('descriptions')
+        except:
+            files_descriptions = []
+        data = json.loads(json.dumps(request.data))
+        json_data = {}
+        for dat in data:
+            json_data[dat] = json.loads(data[dat])
+        print(json_data['equipments'])
+        serializer = ObjectSerializer(data=json_data,instance=obj)
+        if serializer.is_valid():
+            print('dd')
+            serializer.save()
+            for equipment in json_data['equipments']:
+                if equipment['is_new']:
+                    ObjectAdditionalEquipment.objects.create(
+                        amount=equipment['amount'],
+                        object=obj,
+                        model_id=equipment['model']
+                    )
+            for contact in json_data['contacts']:
+                if contact['is_new']:
+                    ObjectContact.objects.create(
+                        order_num=contact['order_num'],
+                        object=obj,
+                        name=contact['name'],
+                        phone=contact['phone'],
+                        email=contact['email'],
+                        comment=contact['comment'],
+                        social=contact['social'],
+                    )
+                else:
+                    contact_obj = ObjectContact.objects.get(id=contact['id'])
+                    contact_obj.order_num = contact['order_num']
+                    contact_obj.name = contact['name']
+                    contact_obj.phone = contact['phone']
+                    contact_obj.email = contact['email']
+                    contact_obj.comment = contact['comment']
+                    contact_obj.social = contact['social']
+                    contact_obj.save()
+
+
+        else:
+            print(serializer.errors)
+        # order.object_id = json_data['object']
+        # order.equipment_id = json_data['equipment']
+        # type_id = json_data.get('type', None)
+        # work_type_id = json_data.get('work_type', None)
+        # if type_id:
+        #     order.type_id = type_id
+        # #if work_type_id:
+        # order.work_type_id = work_type_id
+        # # order.type_id = json_data['type']
+        # # order.work_type_id = json_data['work_type']
+        # order.is_critical = json_data['is_critical']
+        # order.comment = json_data['comment']
+        # order.date_dead_line = json_data['date_dead_line']
+        # order.save()
+        for index, file in enumerate(request.FILES.getlist('files')):
+            ObjectFile.objects.create(file=file, object=obj, text=files_descriptions[index])
+
+        return Response(status=200)

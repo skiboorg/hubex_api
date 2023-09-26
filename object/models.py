@@ -14,6 +14,7 @@ class Object(models.Model):
     comment = models.TextField(blank=True, null=True)
     address = models.TextField(blank=True, null=True)
     is_sign = models.BooleanField(default=False)
+    is_have_other_additional_equipment = models.BooleanField(default=False, null=False)
     is_potencial = models.BooleanField(default=False)
 
     address_comment = models.TextField(blank=True, null=True)

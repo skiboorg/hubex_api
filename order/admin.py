@@ -4,18 +4,47 @@ from .models import *
 class CheckListInputInline (admin.TabularInline):
     model = CheckListInput
     extra = 0
+class CheckListTableInline (admin.TabularInline):
+    model = CheckListTable
+    extra = 0
+
+class CheckListTableInputInline (admin.TabularInline):
+    model = CheckListTableInput
+    extra = 0
+
+
+class StageFirmSelectInline (admin.TabularInline):
+    model = StageFirmSelect
+    extra = 0
 
 class CheckListAdmin(admin.ModelAdmin):
     model = CheckList
-    inlines = [CheckListInputInline]
+    inlines = [CheckListInputInline,CheckListTableInline]
+
+class CheckListTableAdmin(admin.ModelAdmin):
+    model = CheckList
+    inlines = [CheckListTableInputInline]
+
+
+
+class StageAdmin(admin.ModelAdmin):
+    model = Stage
+    inlines = [StageFirmSelectInline]
+
+
 admin.site.register(Status)
 admin.site.register(InputField)
 admin.site.register(CheckList,CheckListAdmin)
-admin.site.register(CheckListInput)
-admin.site.register(Stage)
+#admin.site.register(CheckListInput)
+admin.site.register(Stage,StageAdmin)
 admin.site.register(CheckListData)
 admin.site.register(Order)
 admin.site.register(Type)
+admin.site.register(WorkType)
 admin.site.register(StageLog)
+admin.site.register(CheckListTable,CheckListTableAdmin)
+#admin.site.register(CheckListTableInput)
+admin.site.register(CheckListTableInputField)
+admin.site.register(CheckListTableData)
 
 

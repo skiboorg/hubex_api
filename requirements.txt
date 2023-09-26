@@ -20,6 +20,7 @@ segno
 qrcode
 aiogram
 openpyxl
+psycopg2
 django-webpush
 flask
 python-telegram-bot

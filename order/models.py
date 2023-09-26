@@ -24,8 +24,18 @@ class Type(models.Model):
     name = models.CharField(max_length=255, blank=True, null=True)
     is_default = models.BooleanField(default=False, null=True)
     class Meta:
-        verbose_name = 'Тип '
-        verbose_name_plural = 'Тип '
+        verbose_name = 'Тип заявки'
+        verbose_name_plural = 'Тип заявки'
+
+    def __str__(self):
+        return self.name
+
+class WorkType(models.Model):
+    name = models.CharField(max_length=255, blank=True, null=True)
+    is_default = models.BooleanField(default=False, null=True)
+    class Meta:
+        verbose_name = 'Тип работ'
+        verbose_name_plural = 'Тип работ'
 
     def __str__(self):
         return self.name
@@ -43,6 +53,10 @@ class InputField(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name = 'Тип ввода чеклиста'
+        verbose_name_plural = 'Тип ввода чеклиста'
+
 
 
 class CheckList(models.Model):
@@ -50,6 +64,10 @@ class CheckList(models.Model):
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        verbose_name = 'Чеклисты'
+        verbose_name_plural = 'Чеклисты'
 
 
 class CheckListInput(models.Model):
@@ -87,6 +105,11 @@ class Stage(models.Model):
         return self.name
 
 
+class StageFirmSelect(models.Model):
+    stage = models.ForeignKey(Stage, on_delete=models.CASCADE, blank=True, null=True, related_name='firms')
+    equipment_firm = models.ForeignKey('equipment.EquipmentFirm', on_delete=models.CASCADE, blank=True, null=True)
+    check_list = models.ForeignKey(CheckList, on_delete=models.CASCADE, blank=True, null=True)
+
 
 class Order(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, db_index=True)
@@ -94,6 +117,7 @@ class Order(models.Model):
     stage = models.ForeignKey(Stage, on_delete=models.CASCADE, blank=True, null=True)
     status = models.ForeignKey(Status, on_delete=models.CASCADE, blank=True, null=True)
     type = models.ForeignKey(Type, on_delete=models.CASCADE, blank=True, null=True)
+    work_type = models.ForeignKey(WorkType, on_delete=models.CASCADE, blank=True, null=True)
     users = models.ManyToManyField('user.User',blank=True)
     is_critical = models.BooleanField(default=False, blank=True)
     object = models.ForeignKey('object.Object', on_delete=models.CASCADE, blank=True, null=True)
@@ -185,3 +209,53 @@ def obj_file_post_save(sender, instance, created, **kwargs):
         instance.save()
 
 post_save.connect(obj_file_post_save, sender=OrderFile)
+
+
+
+class CheckListTableInputField(models.Model):
+    name = models.CharField(max_length=255, blank=True, null=True)
+    is_boolean = models.BooleanField(default=False, null=True)
+    is_input = models.BooleanField(default=False, null=True)
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Тип ввода таблицы в чеклисте'
+        verbose_name_plural = 'Тип ввода таблицы в чеклисте'
+
+
+
+class CheckListTable(models.Model):
+    name = models.CharField(max_length=255, blank=True, null=True)
+    check_list = models.ForeignKey(CheckList, on_delete=models.CASCADE, blank=True, null=True, related_name='check_list_tables')
+    default_data = models.JSONField(blank=True, null=True)
+    # data = models.ForeignKey(CheckListTableData, on_delete=models.SET_NULL, blank=True, null=True)
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Таблицы в чеклисте'
+        verbose_name_plural = 'Таблицы в чеклисте'
+
+class CheckListTableData(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, blank=True, null=True, related_name='check_list_table_datas')
+    check_list = models.ForeignKey(CheckList, on_delete=models.CASCADE, blank=True, null=True)
+    data = models.JSONField(blank=True, null=True)
+    table = models.ForeignKey(CheckListTable, on_delete=models.CASCADE, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
+
+class CheckListTableInput(models.Model):
+    order_num = models.IntegerField(default=1, blank=True)
+    table = models.ForeignKey(CheckListTable, on_delete=models.CASCADE, blank=True, null=True, related_name='check_list_table_inputs')
+
+    input = models.ForeignKey(CheckListTableInputField, on_delete=models.CASCADE, blank=True, null=True)
+    label = models.CharField(max_length=255, blank=True, null=True)
+    value = models.CharField(max_length=255, blank=True, null=True)
+    class Meta:
+        ordering = ('order_num',)
+
+
+
+
+

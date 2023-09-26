@@ -46,6 +46,7 @@ class Equipment(models.Model):
     comment = models.TextField(blank=True, null=True)
     is_warranty = models.BooleanField(default=False, blank=True)
     is_service_book_sign = models.BooleanField(default=False, blank=True)
+    is_at_exchange = models.BooleanField(default=False, blank=True)
     warranty_ends = models.DateField(blank=True, null=True)
     service_book_sign_date = models.DateField(blank=True, null=True)
     def __str__(self):

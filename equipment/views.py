@@ -28,6 +28,7 @@ class EquipmentFilter(django_filters.FilterSet):
         fields = {
             'is_warranty': ('exact',),
             'is_service_book_sign': ('exact',),
+            'is_at_exchange': ('exact',),
             'model__firm_id': ('exact',),
             'model_id': ('exact',),
 
@@ -94,6 +95,7 @@ class UpdateEquipment(APIView):
         equipment.warranty_ends = data['warranty_ends']
         equipment.service_book_sign_date = data['service_book_sign_date']
         equipment.date_in_work = data['date_in_work']
+        equipment.is_at_exchange = data['is_at_exchange']
         equipment.save()
 
 

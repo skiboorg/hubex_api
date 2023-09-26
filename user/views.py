@@ -190,6 +190,7 @@ class FindByWorkTime(APIView):
                         "order_id": item.order.id,
                         'order_number': item.order.number,
                         'order_created': item.order.date_created_at,
+                        'equipment_sn': item.order.equipment.serial_number,
                         'status_name': item.order.status.name,
                         'status_bg_color': item.order.status.bg_color,
                         'status_text_color': item.order.status.text_color,
@@ -203,14 +204,14 @@ class FindByWorkTime(APIView):
         for item in work_time:
             print(item)
             for result_item in result:
-                print('wqewqe')
                 if result_item['order_id'] == item.order.id:
                     result_item['work_times'].append({
                         'order_id': item.order.id,
                         'order_number': item.order.number,
+
                         'user_fio': item.user.fio,
                         'user_role': item.user.role.name,
-                        'time_type': item.type.name,
+                        'time_type': item.type.name if item.type else 'Тип времени не указан',
                         'date':item.date,
                         'start_time':item.start_time,
                         'end_time':item.end_time,

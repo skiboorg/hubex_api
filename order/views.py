@@ -79,8 +79,12 @@ class OrderViewSet(viewsets.ModelViewSet):
         if serializer.is_valid():
             obj = serializer.save()
             type_id = json_data.get('type', None)
+            work_type_id = json_data.get('work_type', None)
             if type_id:
-                obj.type_id = json_data.get('type',None)
+                obj.type_id = type_id
+            if work_type_id:
+                obj.work_type_id = work_type_id
+
 
             obj.object_id = json_data['object']
             obj.equipment_id = json_data['equipment']
@@ -242,6 +246,10 @@ class OrderTypes(generics.ListAPIView):
     serializer_class = TypeSerializer
     queryset = Type.objects.all()
 
+class OrderWorkTypes(generics.ListAPIView):
+    serializer_class = WorkTypeSerializer
+    queryset = WorkType.objects.all()
+
 class OrderDeleteFile(generics.DestroyAPIView):
     serializer_class = OrderFile
     queryset = OrderFile.objects.all()
@@ -264,7 +272,14 @@ class OrderUpdate(APIView):
         print(json_data)
         order.object_id = json_data['object']
         order.equipment_id = json_data['equipment']
-        order.type_id = json_data['type']
+        type_id = json_data.get('type', None)
+        work_type_id = json_data.get('work_type', None)
+        if type_id:
+            order.type_id = type_id
+        #if work_type_id:
+        order.work_type_id = work_type_id
+        # order.type_id = json_data['type']
+        # order.work_type_id = json_data['work_type']
         order.is_critical = json_data['is_critical']
         order.comment = json_data['comment']
         order.date_dead_line = json_data['date_dead_line']
@@ -275,3 +290,113 @@ class OrderUpdate(APIView):
         return Response(status=200)
 
 
+
+class OrderGetTableData(APIView):
+    def get(self,request):
+        order_id = self.request.query_params.get('order_id')
+        check_list_id = self.request.query_params.get('check_list_id')
+        table_id = self.request.query_params.get('table_id')
+        try:
+            data = CheckListTableData.objects.get(
+                order_id=order_id,
+                check_list_id=check_list_id,
+                table_id=table_id
+                                                  )
+            serializer = CheckListTableDataSerializer(data)
+            return Response({'data':serializer.data},status=200)
+        except:
+            return Response({'data':None},status=200)
+class OrderUpdateChecklist(APIView):
+    def post(self, request):
+        data = request.data
+        print(data['check_list'])
+        print(data['tables'])
+        check_list = CheckList.objects.get(
+            id=data['check_list']['id']
+        )
+
+        inputs = check_list.inputs.all()
+        inputs.delete()
+
+        for input in data['check_list']['inputs']:
+            labels = ''
+            for label in input['labels']:
+                labels += label['value'] + '/'
+            CheckListInput.objects.create(
+                check_list=check_list,
+                input_id=input['input_type']['id'],
+                label=input['label'],
+                labels=labels[:-1]
+            )
+        tables = check_list.check_list_tables.all()
+        tables.delete()
+        for table in data['tables']:
+            new_table = CheckListTable.objects.create(
+                name=table['name'],
+                check_list=check_list,
+                default_data=table['rows']
+            )
+            for input in table['inputs']:
+                CheckListTableInput.objects.create(
+                    table=new_table,
+                    input_id=input['input']['id'],
+                    label = input['label']
+                )
+        return Response(status=200)
+class OrderCreateChecklist(APIView):
+    def post(self, request):
+        data = request.data
+        print(data['tables'])
+        new_check_list = CheckList.objects.create(
+            name=data['check_list']['name']
+        )
+
+        for input in data['check_list']['inputs']:
+            labels = ''
+            for label in input['labels']:
+                labels += label['value'] + '/'
+            new_input = CheckListInput.objects.create(
+                check_list=new_check_list,
+                input_id=input['input_type']['id'],
+                label=input['label'],
+                labels=labels[:-1]
+            )
+        for table in data['tables']:
+            new_table = CheckListTable.objects.create(
+                name=table['name'],
+                check_list=new_check_list,
+                default_data=table['rows']
+            )
+            for input in table['inputs']:
+                CheckListTableInput.objects.create(
+                    table=new_table,
+                    input_id=input['input_type']['id'],
+                    label = input['label']
+                )
+
+        return Response(status=200)
+class OrderSaveTable(APIView):
+    def post(self, request):
+        data = request.data
+        table = CheckListTable.objects.get(id=data['table_id'])
+        if not table.default_data:
+            table.default_data = data['data']
+            table.save()
+        else:
+            table_data, _ = CheckListTableData.objects.get_or_create(
+                order_id=data['order_id'],
+                check_list_id=data['check_list_id'],
+                table=table,
+            )
+            table_data.data = data['data']
+            table_data.save()
+
+        return Response(status=200)
+
+class OrderGetChecklistInputs(generics.ListAPIView):
+    serializer_class = InputFieldSerializer
+    queryset = InputField.objects.all()
+
+class OrderGetChecklistTableInputs(generics.ListAPIView):
+    serializer_class = CheckListTableInputFieldSerializer
+    queryset = CheckListTableInputField.objects.all()
