@@ -78,7 +78,7 @@ class UserWorkTimeSerializer(serializers.ModelSerializer):
         result = {}
         result['order_number'] = obj.order.number
         result['order_created'] = obj.order.date_created_at
-        result['equipment_sn'] = obj.order.equipment.serial_number
+        result['equipment_sn'] = obj.order.equipment.serial_number if obj.order.equipment else None
         result['status_name'] = obj.order.status.name
         result['status_bg_color'] = obj.order.status.bg_color
         result['status_text_color'] = obj.order.status.text_color
