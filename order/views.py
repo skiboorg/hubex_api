@@ -52,8 +52,17 @@ class OrderViewSet(viewsets.ModelViewSet):
     #     print('serializer.validated_data',serializer.validated_data)
     #     serializer.save()
 
+    def list(self, request, *args, **kwargs):
+        qs = self.get_queryset()
 
+        for item in qs:
 
+            if datetime.date.today() > item.date_dead_line :
+                item.is_time_left = True
+                item.save(update_fields=['is_time_left'])
+        filtered_queryset = self.filter_queryset(qs)
+        serializer = self.get_serializer(filtered_queryset, many=True)
+        return Response(serializer.data)
     def get_serializer_class(self):
         full_mode = self.request.query_params.get('full', None)
 
@@ -230,6 +239,12 @@ class CheckListFilter(django_filters.FilterSet):
     class Meta:
         model = CheckListData
         fields = ['created_at']
+
+
+class GetCheckListsTemplates(generics.ListAPIView):
+    serializer_class = CheckListSerializer
+    queryset = CheckList.objects.all()
+
 class GetCheckLists(generics.ListAPIView):
     serializer_class = CheckListDataShortSerializer
     queryset = CheckListData.objects.all()
@@ -241,6 +256,10 @@ class GetCheckList(generics.RetrieveAPIView):
     def get_object(self):
         return CheckListData.objects.get(id=self.request.query_params.get('id'))
 
+class GetCheckListTemplate(generics.RetrieveAPIView):
+    serializer_class = CheckListSerializer
+    def get_object(self):
+        return CheckList.objects.get(id=self.request.query_params.get('id'))
 
 class OrderTypes(generics.ListAPIView):
     serializer_class = TypeSerializer

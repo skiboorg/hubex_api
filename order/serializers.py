@@ -85,9 +85,15 @@ class StageFirmSelectSerializer(serializers.ModelSerializer):
         model = StageFirmSelect
         fields = '__all__'
 
+class StageButtonSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StageButton
+        fields = '__all__'
+
 class StageSerializer(serializers.ModelSerializer):
     from user.serializers import RoleSerializer
     firms = StageFirmSelectSerializer(many=True, read_only=True, required=False)
+    buttons = StageButtonSerializer(many=True, read_only=True, required=False)
     check_list = CheckListSerializer(many=False, read_only=True, required=False)
     add_user_role = RoleSerializer(many=False, read_only=True, required=False)
     class Meta:

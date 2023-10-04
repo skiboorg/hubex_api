@@ -86,7 +86,7 @@ class Stage(models.Model):
     role = models.ManyToManyField('user.Role', blank=True, null=True)
     role_can_interact = models.ManyToManyField('user.Role', blank=True, null=True,related_name='role_can_interact')
     status = models.ForeignKey(Status, on_delete=models.CASCADE, blank=True, null=True)
-    check_list = models.ForeignKey(CheckList, on_delete=models.CASCADE, blank=True, null=True)
+    #check_list = models.ForeignKey(CheckList, on_delete=models.CASCADE, blank=True, null=True)
     is_default = models.BooleanField(default=False, null=True)
 
     need_add_user = models.BooleanField(default=False, null=True)
@@ -96,10 +96,10 @@ class Stage(models.Model):
     add_user_role_btn_label = models.CharField(max_length=255, blank=True, null=True)
 
 
-    btn_1_goto_stage = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True, related_name='goto_stage_1_btn')
-    btn_1_label = models.CharField(max_length=255, blank=True, null=True)
-    btn_2_goto_stage = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True, related_name='goto_stage_2_btn')
-    btn_2_label = models.CharField(max_length=255, blank=True, null=True)
+    # btn_1_goto_stage = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True, related_name='goto_stage_1_btn')
+    # btn_1_label = models.CharField(max_length=255, blank=True, null=True)
+    # btn_2_goto_stage = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True, related_name='goto_stage_2_btn')
+    # btn_2_label = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
         return self.name
@@ -110,6 +110,11 @@ class StageFirmSelect(models.Model):
     equipment_firm = models.ForeignKey('equipment.EquipmentFirm', on_delete=models.CASCADE, blank=True, null=True)
     check_list = models.ForeignKey(CheckList, on_delete=models.CASCADE, blank=True, null=True)
 
+class StageButton(models.Model):
+    stage = models.ForeignKey(Stage, on_delete=models.CASCADE, blank=True, null=True, related_name='buttons')
+    goto_stage = models.ForeignKey(Stage, on_delete=models.CASCADE, blank=True, null=True,
+                                         related_name='goto_stage')
+    label = models.CharField(max_length=255, blank=True, null=True)
 
 class Order(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, db_index=True)
@@ -216,6 +221,7 @@ class CheckListTableInputField(models.Model):
     name = models.CharField(max_length=255, blank=True, null=True)
     is_boolean = models.BooleanField(default=False, null=True)
     is_input = models.BooleanField(default=False, null=True)
+    grow = models.IntegerField(default=1, null=True)
     def __str__(self):
         return self.name
 

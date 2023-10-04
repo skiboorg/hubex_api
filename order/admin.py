@@ -17,6 +17,11 @@ class StageFirmSelectInline (admin.TabularInline):
     model = StageFirmSelect
     extra = 0
 
+class StageButtontInline (admin.TabularInline):
+    model = StageButton
+    fk_name = 'stage'
+    extra = 0
+
 class CheckListAdmin(admin.ModelAdmin):
     model = CheckList
     inlines = [CheckListInputInline,CheckListTableInline]
@@ -29,7 +34,7 @@ class CheckListTableAdmin(admin.ModelAdmin):
 
 class StageAdmin(admin.ModelAdmin):
     model = Stage
-    inlines = [StageFirmSelectInline]
+    inlines = [StageFirmSelectInline,StageButtontInline]
 
 
 admin.site.register(Status)
