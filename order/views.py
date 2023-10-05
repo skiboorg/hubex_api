@@ -14,6 +14,8 @@ from user.models import User, UserWorkTime
 from django.db.models import Count, Q
 import datetime
 
+from user.services import send_tg_mgs
+
 class OrderFilter(django_filters.FilterSet):
     created_at_gte = IsoDateTimeFilter(field_name="date_created_at", lookup_expr='gte')
     created_at_lte = IsoDateTimeFilter(field_name="date_created_at", lookup_expr='lte')
@@ -203,7 +205,7 @@ class AddUsersToOrder(APIView):
             order.users.add(user)
             chat.users.add(user)
             if order_user['events']:
-                UserWorkTime.objects.create(
+                new_time = UserWorkTime.objects.create(
                     user=user,
                     order=order,
                     type_id=order_user['events']['type'],
@@ -211,6 +213,8 @@ class AddUsersToOrder(APIView):
                     start_time=order_user['events']['start_time'],
                     end_time=order_user['events']['end_time'],
                 )
+                send_tg_mgs(user.telega_id, f'Вы назначены на заявку {order.number},дата {new_time.date}'
+                                            f' c {new_time.start_time} до {new_time.end_time}')
             print(order_user)
         return Response(status=200)
 
