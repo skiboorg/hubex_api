@@ -105,9 +105,9 @@ class Stage(models.Model):
         return self.name
 
 
-class StageFirmSelect(models.Model):
-    stage = models.ForeignKey(Stage, on_delete=models.CASCADE, blank=True, null=True, related_name='firms')
-    equipment_firm = models.ForeignKey('equipment.EquipmentFirm', on_delete=models.CASCADE, blank=True, null=True)
+class StageGroupSelect(models.Model):
+    stage = models.ForeignKey(Stage, on_delete=models.CASCADE, blank=True, null=True, related_name='groups')
+    equipment_group = models.ForeignKey('equipment.EquipmentGroup', on_delete=models.CASCADE, blank=True, null=True)
     check_list = models.ForeignKey(CheckList, on_delete=models.CASCADE, blank=True, null=True)
 
 class StageButton(models.Model):

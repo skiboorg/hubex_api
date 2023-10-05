@@ -7,7 +7,15 @@ import qrcode
 from io import BytesIO
 # Create your models here.
 
+class EquipmentGroup(models.Model):
+    name = models.CharField(max_length=255, blank=False, null=True)
 
+    def __str__(self):
+        return f'{self.name}'
+
+    class Meta:
+        verbose_name = 'Группа оборудования'
+        verbose_name_plural = 'Группа оборудования'
 class EquipmentFirm(models.Model):
     name = models.CharField(max_length=255, blank=False, null=True)
 
@@ -20,6 +28,7 @@ class EquipmentFirm(models.Model):
 
 class EquipmentModel(models.Model):
     firm = models.ForeignKey(EquipmentFirm, on_delete=models.CASCADE, blank=True, null=True)
+    group = models.ForeignKey(EquipmentGroup, on_delete=models.CASCADE, blank=False, null=True)
     name = models.CharField(max_length=255, blank=False, null=True)
     image = models.FileField(upload_to='equipment/', blank=True, null=True)
     file = models.FileField(upload_to='equipment/', blank=True, null=True)

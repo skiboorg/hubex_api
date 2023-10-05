@@ -79,11 +79,17 @@ class CheckListSerializer(serializers.ModelSerializer):
         model = CheckList
         fields = '__all__'
 
-class StageFirmSelectSerializer(serializers.ModelSerializer):
+class StageGroupSelectSerializer(serializers.ModelSerializer):
+
     check_list = CheckListSerializer(many=False, read_only=True, required=False)
+    #group = serializers.SerializerMethodField()
     class Meta:
-        model = StageFirmSelect
+        model = StageGroupSelect
         fields = '__all__'
+
+    def get_group(self,obj):
+        from equipment.serializers import EquipmentGroupSerializer
+        return EquipmentGroupSerializer(obj.equipment_group).data
 
 class StageButtonSerializer(serializers.ModelSerializer):
     class Meta:
@@ -92,7 +98,7 @@ class StageButtonSerializer(serializers.ModelSerializer):
 
 class StageSerializer(serializers.ModelSerializer):
     from user.serializers import RoleSerializer
-    firms = StageFirmSelectSerializer(many=True, read_only=True, required=False)
+    groups = StageGroupSelectSerializer(many=True, read_only=True, required=False)
     buttons = StageButtonSerializer(many=True, read_only=True, required=False)
     check_list = CheckListSerializer(many=False, read_only=True, required=False)
     add_user_role = RoleSerializer(many=False, read_only=True, required=False)

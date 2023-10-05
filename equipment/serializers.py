@@ -25,9 +25,15 @@ class EquipmentFirmSerializer(serializers.ModelSerializer):
     class Meta:
         model = EquipmentFirm
         fields = '__all__'
+class EquipmentGroupSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = EquipmentGroup
+        fields = '__all__'
 
 class EquipmentModelSerializer(serializers.ModelSerializer):
     firm = EquipmentFirmSerializer(many=False, read_only=True, required=False)
+    group = EquipmentGroupSerializer(many=False, read_only=True, required=False)
     class Meta:
         model = EquipmentModel
         fields = '__all__'
