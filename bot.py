@@ -26,7 +26,7 @@ def start(update: Update, context: CallbackContext) -> None:
         cur.close()
     else:
         update.message.reply_text("Привет! Твой телеграм username не найден в базе")
-    print(user[0], file=sys.stderr)
+
 
 
 def echo(update: Update, context: CallbackContext) -> None:
