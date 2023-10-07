@@ -24,6 +24,7 @@ def start(update: Update, context: CallbackContext) -> None:
     except:
         # в случае сбоя подключения будет выведено сообщение в STDOUT
         print('Can`t establish connection to database')
+    print(conn)
     cur = conn.cursor()
     res = cur.execute("SELECT * FROM user_user WHERE telega LIKE ?",(user_data.username,))
     user = res.fetchone()
