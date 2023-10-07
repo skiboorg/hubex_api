@@ -1,10 +1,12 @@
 import sqlite3
+import psycopg2
 
 from flask import Flask, request, jsonify
 from telegram import Update
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
 import sys
 
+import settings
 app = Flask(__name__)
 
 TOKEN = "6199157737:AAHHlXFQ2vsXTuLeQ_rBtISoi72qja3EdK0"
@@ -15,8 +17,14 @@ dispatcher = updater.dispatcher
 def start(update: Update, context: CallbackContext) -> None:
     print(update.message.from_user, file=sys.stderr)
     user_data=update.message.from_user
-    con = sqlite3.connect("db.sqlite3")
-    cur = con.cursor()
+    conn = None
+    try:
+        # пытаемся подключиться к базе данных
+        conn = psycopg2.connect(dbname=settings.DB_NAME, user=settings.DB_USER, password=settings.DB_PASSWORD, host='localhost')
+    except:
+        # в случае сбоя подключения будет выведено сообщение в STDOUT
+        print('Can`t establish connection to database')
+    cur = conn.cursor()
     res = cur.execute("SELECT * FROM user_user WHERE telega LIKE ?",(user_data.username,))
     user = res.fetchone()
     print(user)
