@@ -19,6 +19,7 @@ def start(update: Update, context: CallbackContext) -> None:
     cur = con.cursor()
     res = cur.execute("SELECT * FROM user_user WHERE telega LIKE ?",(user_data.username,))
     user = res.fetchone()
+    print(user)
     if user:
         update.message.reply_text("Привет!")
         cur.execute("UPDATE user_user SET telega_id=? WHERE id=?", (user_data.id, user[0],))
