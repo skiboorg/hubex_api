@@ -213,8 +213,8 @@ class AddUsersToOrder(APIView):
                     start_time=order_user['events']['start_time'],
                     end_time=order_user['events']['end_time'],
                 )
-                send_tg_mgs(user.telega_id, f'Вы назначены на заявку {order.number},дата {new_time.date}'
-                                            f' c {new_time.start_time} до {new_time.end_time}')
+                # send_tg_mgs(user.telega_id, f'Вы назначены на заявку {order.number},дата {new_time.date}'
+                #                             f' c {new_time.start_time} до {new_time.end_time}')
             print(order_user)
         return Response(status=200)
 

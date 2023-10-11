@@ -1,5 +1,6 @@
 import sqlite3
 import psycopg2
+from psycopg2.extras import NamedTupleCursor
 
 from flask import Flask, request, jsonify
 from telegram import Update
@@ -17,22 +18,18 @@ dispatcher = updater.dispatcher
 def start(update: Update, context: CallbackContext) -> None:
     print(update.message.from_user, file=sys.stderr)
     user_data=update.message.from_user
-    conn = None
-    try:
-        # пытаемся подключиться к базе данных
-        conn = psycopg2.connect(dbname=settings.DB_NAME, user=settings.DB_USER, password=settings.DB_PASSWORD, host='localhost')
-    except:
-        # в случае сбоя подключения будет выведено сообщение в STDOUT
-        print('Can`t establish connection to database')
-    print(conn)
+    conn = psycopg2.connect(dbname=settings.DB_NAME, user=settings.DB_USER, password=settings.DB_PASSWORD, host='127.0.0.1')
+
     cur = conn.cursor()
-    res = cur.execute("SELECT * FROM user_user WHERE telega LIKE ?",(user_data.username,))
+    res = cur.execute("SELECT * FROM user_user WHERE telega LIKE '%web_appp_dev%'")
+    print('res', file=sys.stderr)
+    print(res, file=sys.stderr)
     user = res.fetchone()
     print(user)
     if user:
         update.message.reply_text("Привет!")
         cur.execute("UPDATE user_user SET telega_id=? WHERE id=?", (user_data.id, user[0],))
-        con.commit()
+        conn.commit()
         cur.close()
     else:
         update.message.reply_text("Привет! Твой телеграм username не найден в базе")
