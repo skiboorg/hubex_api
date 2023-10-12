@@ -14,6 +14,9 @@ from user.models import User, UserWorkTime
 from django.db.models import Count, Q
 import datetime
 
+from object.models import Object
+from equipment.models import Equipment
+
 from user.services import send_tg_mgs
 
 class OrderFilter(django_filters.FilterSet):
@@ -97,8 +100,32 @@ class OrderViewSet(viewsets.ModelViewSet):
                 obj.work_type_id = work_type_id
 
 
-            obj.object_id = json_data['object']
-            obj.equipment_id = json_data['equipment']
+            object_id = json_data['object']
+            equipment_id = json_data['equipment']
+            need_create_new_object = json_data.get('need_create_object',None)
+
+            new_object = None
+            if not need_create_new_object:
+                obj.object_id = object_id
+            else:
+                new_object = Object.objects.create(
+                     number= object_id.get('number'),
+                    address=object_id.get('address'),
+                    address_comment=object_id.get('address_comment'),
+                 )
+                obj.object = new_object
+
+
+            if not need_create_new_object:
+                obj.equipment_id = equipment_id
+            else:
+                new_equipment = Equipment.objects.create(
+                    object=new_object,
+                    serial_number=equipment_id.get('serial_number'),
+                    model_id=equipment_id.get('model'),
+                    name=equipment_id.get('name'),
+                )
+                obj.equipment = new_equipment
             if json_data['is_critical']:
                 delta = 7
             else:

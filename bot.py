@@ -21,16 +21,23 @@ def start(update: Update, context: CallbackContext) -> None:
     conn = psycopg2.connect(dbname=settings.DB_NAME, user=settings.DB_USER, password=settings.DB_PASSWORD, host='127.0.0.1')
 
     cur = conn.cursor()
-    res = cur.execute("SELECT * FROM user_user WHERE telega LIKE '%web_appp_dev%'")
-    print('res', file=sys.stderr)
-    print(res, file=sys.stderr)
-    user = res.fetchone()
+    get_query = "SELECT * FROM user_user WHERE telega LIKE (%s)"
+    cur.execute(get_query, (user_data.username,))
+    user = cur.fetchone()
     print(user)
+    print(user[13])
+
     if user:
-        update.message.reply_text("Привет!")
-        cur.execute("UPDATE user_user SET telega_id=? WHERE id=?", (user_data.id, user[0],))
-        conn.commit()
-        cur.close()
+
+        if not user[13]:
+            update.message.reply_text("ID успешно установлен")
+            print('save')
+            update_query = "UPDATE user_user SET telega_id=(%s) WHERE id=(%s)"
+            cur.execute(update_query, (user_data.id, user[0],))
+            conn.commit()
+            cur.close()
+        else:
+            update.message.reply_text("Привет! ")
     else:
         update.message.reply_text("Привет! Твой телеграм username не найден в базе")
 
