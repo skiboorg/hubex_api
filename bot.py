@@ -25,10 +25,8 @@ def start(update: Update, context: CallbackContext) -> None:
     cur.execute(get_query, (user_data.username,))
     user = cur.fetchone()
     print(user)
-    print(user[13])
 
     if user:
-
         if not user[13]:
             update.message.reply_text("ID успешно установлен")
             print('save')
