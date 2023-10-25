@@ -16,9 +16,10 @@ class Object(models.Model):
     is_sign = models.BooleanField(default=False)
     is_have_other_additional_equipment = models.BooleanField(default=False, null=False)
     is_potencial = models.BooleanField(default=False)
+    is_smart = models.BooleanField('стороннее управление (умный дом)', default=False)
 
     address_comment = models.TextField(blank=True, null=True)
-    client = models.ForeignKey('client.Client',blank=True, null=True, on_delete=models.CASCADE)
+    client = models.ForeignKey('client.Client',blank=True, null=True, on_delete=models.CASCADE,related_name='client_objects')
     image = models.FileField(upload_to='object/image', blank=True, null=True)
     # equipment = models.ManyToManyField('equipment.Equipment', blank=True)
     def __str__(self):

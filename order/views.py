@@ -61,10 +61,10 @@ class OrderViewSet(viewsets.ModelViewSet):
         qs = self.get_queryset()
 
         for item in qs:
-
-            if datetime.date.today() > item.date_dead_line :
-                item.is_time_left = True
-                item.save(update_fields=['is_time_left'])
+            if item.date_dead_line:
+                if datetime.date.today() > item.date_dead_line:
+                    item.is_time_left = True
+                    item.save(update_fields=['is_time_left'])
         filtered_queryset = self.filter_queryset(qs)
         serializer = self.get_serializer(filtered_queryset, many=True)
         return Response(serializer.data)

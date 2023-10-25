@@ -6,6 +6,8 @@ from PIL import Image, ImageDraw, ImageFont
 import qrcode
 from io import BytesIO
 # Create your models here.
+from django.db.models.signals import post_save
+
 
 class EquipmentGroup(models.Model):
     name = models.CharField(max_length=255, blank=False, null=True)
@@ -61,22 +63,34 @@ class Equipment(models.Model):
     def __str__(self):
         return f'S/N :{self.serial_number} | Название :{self.name}'
 
-    def save(self, *args, **kwargs):
-        # serial_number = f'{create_random_string(3)}-{create_random_string(5)}-{create_random_string(True,2)}'
-        if not self.qr:
-            data = f"http://buhler.onside.software/equipment/qr/{self.serial_number}"
-            qr_content = generate_styled_qrcode(data)
-            path = f'{settings.MEDIA_ROOT}/equipment/{self.serial_number}.png'
-            with open(path, 'wb') as f:
-                f.write(qr_content)
-            self.qr = f'equipment/{self.serial_number}.png'
-
-        # if not self.qr_with_info:
-        #     qr_with_info = make_info_qr(qr_content,'МОДЕЛЬ',self.model.name,'СЕРИЙНЫЙ НОМЕР',self.serial_number)
-        #     qr_with_info.save(f'{settings.MEDIA_ROOT}/equipment/{self.id}.jpg')
-        #     self.qr_with_info=f'/equipment/{self.id}.jpg'
-        super().save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     # serial_number = f'{create_random_string(3)}-{create_random_string(5)}-{create_random_string(True,2)}'
+    #     #if not self.qr:
+    #     # data = f"http://buhler.onside.software/service/equipment/qr/{self.id}"
+    #     # qr_content = generate_styled_qrcode(data)
+    #     # path = f'{settings.MEDIA_ROOT}/equipment/{self.serial_number}.png'
+    #     # with open(path, 'wb') as f:
+    #     #     f.write(qr_content)
+    #     # self.qr = f'equipment/{self.serial_number}.png'
+    #
+    #     # if not self.qr_with_info:
+    #     #     qr_with_info = make_info_qr(qr_content,'МОДЕЛЬ',self.model.name,'СЕРИЙНЫЙ НОМЕР',self.serial_number)
+    #     #     qr_with_info.save(f'{settings.MEDIA_ROOT}/equipment/{self.id}.jpg')
+    #     #     self.qr_with_info=f'/equipment/{self.id}.jpg'
+    #     super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = 'Оборудование'
         verbose_name_plural = 'Оборудование'
+def equipment_post_save(sender, instance, created, **kwargs):
+    if not instance.qr:
+        data = f"http://buhler.onside.software/service/equipment/qr/{instance.id}"
+        qr_content = generate_styled_qrcode(data)
+        path = f'{settings.MEDIA_ROOT}/equipment/{instance.serial_number}.png'
+        with open(path, 'wb') as f:
+            f.write(qr_content)
+        instance.qr = f'equipment/{instance.serial_number}.png'
+        instance.save()
+
+
+post_save.connect(equipment_post_save, sender=Equipment)

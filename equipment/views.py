@@ -37,7 +37,7 @@ class EquipmentFilter(django_filters.FilterSet):
 class EquipmentViewSet(viewsets.ModelViewSet):
     queryset = Equipment.objects.all()
     serializer_class = EquipmentSerializer
-    lookup_field = 'serial_number'
+    lookup_field = 'id'
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
     filterset_class = EquipmentFilter
 

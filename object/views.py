@@ -145,11 +145,14 @@ class ObjectUpdate(APIView):
         json_data = {}
         for dat in data:
             json_data[dat] = json.loads(data[dat])
-        print(json_data['equipments'])
+        print(json_data['client'])
         serializer = ObjectSerializer(data=json_data,instance=obj)
         if serializer.is_valid():
             print('dd')
             serializer.save()
+            obj.client_id = json_data['client']
+            obj.save()
+
             for equipment in json_data['equipments']:
                 if equipment['is_new']:
                     ObjectAdditionalEquipment.objects.create(

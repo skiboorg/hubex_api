@@ -64,6 +64,11 @@ class ObjectSerializer(serializers.ModelSerializer):
         model = Object
         fields = '__all__'
 
+class ClientObjectSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Object
+        fields = '__all__'
 
 
 

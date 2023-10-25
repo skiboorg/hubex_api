@@ -24,10 +24,17 @@ class ClientContactSerializer(serializers.ModelSerializer):
         model = ClientContact
         fields = '__all__'
 class ClientSerializer(serializers.ModelSerializer):
+
     contacts = ClientContactSerializer(many=True, read_only=True, required=False)
+    objects = serializers.SerializerMethodField()
     class Meta:
         model = Client
         fields = '__all__'
+
+    def get_objects(self,obj):
+        from object.serializers import ClientObjectSerializer
+        return ClientObjectSerializer(obj.client_objects, many=True).data
+
 
 
 
