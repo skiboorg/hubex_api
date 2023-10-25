@@ -190,7 +190,7 @@ class FindByWorkTime(APIView):
                         "order_id": item.order.id,
                         'order_number': item.order.number,
                         'order_created': item.order.date_created_at,
-                        'equipment_sn': item.order.equipment.serial_number,
+                        'equipment_sn': item.order.equipment.serial_number if item.order.equipment else 'Оборудование не указано',
                         'status_name': item.order.status.name,
                         'status_bg_color': item.order.status.bg_color,
                         'status_text_color': item.order.status.text_color,
