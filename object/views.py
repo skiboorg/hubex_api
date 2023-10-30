@@ -5,6 +5,7 @@ from django.db.models import Q
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 from rest_framework import generics, viewsets
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -27,7 +28,13 @@ class ObjectFilter(django_filters.FilterSet):
         model = Object
         fields = ['name']
 
+class ObjectPagination(PageNumberPagination):
+    page_size = 15
+    page_size_query_param = 'page_size'
+    max_page_size = 10000
+
 class ObjectViewSet(viewsets.ModelViewSet):
+    pagination_class = ObjectPagination
     queryset = Object.objects.all()
     serializer_class = ObjectSerializer
     lookup_field = 'id'
