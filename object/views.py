@@ -113,20 +113,46 @@ class DeleteContact(APIView):
         obj.delete()
         return Response(status=200)
 class FillObject(APIView):
+
     def get(self,request):
         from openpyxl import load_workbook
-        wb = load_workbook(filename='object.xlsx')
+        wb = load_workbook(filename='obj.xlsx')
         sheet_obj = wb.active
         max_row = sheet_obj.max_row
+        max_col = 0
+        # for i in range(1, 20000):
+        #     if sheet_obj.cell(row=1, column=i).value == None:
+        #         max_col = i
+        #         break
+        #     else:
+        #         print(sheet_obj.cell(row=1, column=i).value,i)
 
         # Loop will print all columns name
-
-        for i in range(1, max_row + 1):
-
+        # max_row
+        for i in range(5,  max_row+6):
             obj_number = sheet_obj.cell(row=i, column=1)
             obj_address = sheet_obj.cell(row=i, column=2)
-            print(obj_number.value,obj_address.value)
-            Object.objects.create(number=obj_number.value,address=obj_address.value)
+            obj_comment = sheet_obj.cell(row=i, column=3)
+            obj_dealer = sheet_obj.cell(row=i, column=4)
+            new_obj , created = Object.objects.get_or_create(number=obj_number.value)
+            if created:
+                new_obj.address = obj_address.value
+                new_obj.comment = obj_comment.value
+                new_obj.save()
+
+            new_obj.additional_equipments.all().delete()
+            for j in range(5, 20):
+                if sheet_obj.cell(row=i, column=j).value != ' ':
+                    if sheet_obj.cell(row=i, column=j).value:
+                        ObjectAdditionalEquipment.objects.create(
+                                object=new_obj,
+                                amount=sheet_obj.cell(row=i, column=j).value,
+                                model_id=sheet_obj.cell(row=3, column=j).value)
+                     # print('id',sheet_obj.cell(row=3, column=j).value)
+                     # print('amount',sheet_obj.cell(row=i, column=j).value)
+
+            #print(obj_number.value,obj_address.value,obj_comment.value,obj_dealer.value)
+        #     #Object.objects.create(number=obj_number.value,address=obj_address.value)
 
         return Response(status=200)
 
