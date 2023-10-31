@@ -10,6 +10,7 @@ urlpatterns = [
     path('object_delete_file', views.DeleteFile.as_view()),
     path('object_delete_contact', views.DeleteContact.as_view()),
     path('object_fill', views.FillObject.as_view()),
+    path('object_fill_equip', views.AddEqip.as_view()),
     path('object_update', views.ObjectUpdate.as_view()),
 
 ]

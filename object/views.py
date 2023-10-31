@@ -119,6 +119,46 @@ class DeleteContact(APIView):
         obj = ObjectContact.objects.get(id=request.data['c_id'])
         obj.delete()
         return Response(status=200)
+
+class AddEqip(APIView):
+    def get(self, request):
+        from openpyxl import load_workbook
+        from equipment.models import Equipment,EquipmentModel
+        wb = load_workbook(filename='equip.xlsx')
+        sheet_obj = wb.active
+        max_row = sheet_obj.max_row
+        for i in range(5, max_row + 6):
+            obj_number = sheet_obj.cell(row=i, column=1)
+            if obj_number.value:
+                obj = Object.objects.filter(number=obj_number.value).first()
+                if obj:
+                    model_id = sheet_obj.cell(row=i, column=2)
+                    equip_serial = sheet_obj.cell(row=i, column=3)
+                    equip_date_in_work = sheet_obj.cell(row=i, column=4)
+                    equip_service_book_date = sheet_obj.cell(row=i, column=5)
+                    print(obj_number.value, equip_date_in_work.value, equip_service_book_date.value)
+                    if equip_serial.value :
+                        equipment, created = Equipment.objects.get_or_create(serial_number=equip_serial.value)
+                        if created:
+                            equipment.model_id = model_id.value
+                        if equip_date_in_work.value and equip_date_in_work.value != ' ':
+                            equipment.date_in_work = equip_date_in_work.value
+                        if equip_service_book_date.value and equip_service_book_date.value != ' ':
+                            equipment.service_book_sign_date = equip_service_book_date.value
+                            equipment.is_service_book_sign = True
+
+                        equipment.object = obj
+                        equipment.save()
+                else:
+                    print('no object', obj_number)
+    #             print(obj_number.value,
+    # model_id.value,
+    # equip_serial.value,
+    # equip_date_in_work.value,
+    # equip_service_book_date.value)
+
+
+        return Response(status=200)
 class FillObject(APIView):
 
     def get(self,request):
