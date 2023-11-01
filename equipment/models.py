@@ -52,7 +52,7 @@ class Equipment(models.Model):
     serial_number = models.CharField(max_length=255, blank=True, null=True)
     qr = models.FileField(upload_to='equipment/', blank=True, null=True, editable=True)
     qr_with_info = models.FileField(upload_to='equipment/', blank=True, null=True, editable=True)
-    name = models.CharField(max_length=255, blank=False, null=True)
+    name = models.CharField(max_length=255, blank=True, null=True)
     date_in_work = models.DateField(blank=True, null=True)
     comment = models.TextField(blank=True, null=True)
     is_warranty = models.BooleanField(default=False, blank=True)

@@ -130,6 +130,9 @@ class UserWorkTime(models.Model):
     class Meta:
         ordering = ('order__number','date','start_time')
 
+    def __str__(self):
+        return f'{self.user.fio} | {self.order.number} '
+
 
 class Notification(models.Model):
     order_number = models.IntegerField(blank=True, null=True)
