@@ -1,3 +1,4 @@
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .serializers import *
@@ -34,7 +35,13 @@ class EquipmentFilter(django_filters.FilterSet):
 
         }
 
+class EquipmentPagination(PageNumberPagination):
+    page_size = 15
+    page_size_query_param = 'page_size'
+    max_page_size = 10000
+
 class EquipmentViewSet(viewsets.ModelViewSet):
+    pagination_class = EquipmentPagination
     queryset = Equipment.objects.all()
     serializer_class = EquipmentSerializer
     lookup_field = 'id'
