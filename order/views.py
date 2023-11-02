@@ -176,7 +176,7 @@ class GetOrdersByWorker(generics.ListAPIView):
     def get_queryset(self):
         user = self.request.user
         print(user.role.id)
-        return Order.objects.filter(users__in=[user.id], stage__role__in=[user.role.id])
+        return Order.objects.filter(is_done=False, users__in=[user.id], stage__role__in=[user.role.id])
 
 class GetOrdersByWorkerForCalendar(generics.ListAPIView):
     serializer_class = OrderSerializer
