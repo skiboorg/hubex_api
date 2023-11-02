@@ -325,7 +325,13 @@ class OrderUpdate(APIView):
             json_data[dat] = json.loads(data[dat])
         print(json_data)
         order.object_id = json_data['object']
-        order.equipment_id = json_data['equipment']
+        equipment_id = json_data['equipment']
+        if not equipment_id:
+            temp_equipment = Equipment.objects.get(is_temp_equipment=True)
+            order.equipment = temp_equipment
+        else:
+            order.equipment_id = equipment_id
+
         type_id = json_data.get('type', None)
         work_type_id = json_data.get('work_type', None)
         if type_id:
