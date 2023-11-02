@@ -117,7 +117,11 @@ class OrderViewSet(viewsets.ModelViewSet):
 
 
             if not need_create_new_object:
-                obj.equipment_id = equipment_id
+                if not equipment_id:
+                    temp_equipment = Equipment.objects.get(is_temp_equipment=True)
+                    obj.equipment = temp_equipment
+                else:
+                    obj.equipment_id = equipment_id
             else:
                 new_equipment = Equipment.objects.create(
                     object=new_object,

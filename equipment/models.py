@@ -58,10 +58,11 @@ class Equipment(models.Model):
     is_warranty = models.BooleanField(default=False, blank=True)
     is_service_book_sign = models.BooleanField(default=False, blank=True)
     is_at_exchange = models.BooleanField(default=False, blank=True)
+    is_temp_equipment = models.BooleanField(default=False, blank=True)
     warranty_ends = models.DateField(blank=True, null=True)
     service_book_sign_date = models.DateField(blank=True, null=True)
     def __str__(self):
-        return f'S/N :{self.serial_number} | Название :{self.name}'
+        return f'S/N :{self.serial_number} '
 
     # def save(self, *args, **kwargs):
     #     # serial_number = f'{create_random_string(3)}-{create_random_string(5)}-{create_random_string(True,2)}'
