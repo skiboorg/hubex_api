@@ -5,14 +5,14 @@ from django.db.models.signals import post_save
 
 class Object(models.Model):
     manager = models.ForeignKey('user.User',blank=True, null=True, on_delete=models.SET_NULL)
-    number = models.CharField('Номер объекта\договора', max_length=255, blank=True, null=True, unique=True)
+    number = models.CharField('Номер объекта\договора', max_length=255, blank=True, null=True, unique=True, db_index=True)
     serial_number = models.CharField(max_length=255, blank=True, null=True)
     longtitude = models.CharField(max_length=255, blank=True, null=True)
     latitude = models.CharField(max_length=255, blank=True, null=True)
     name = models.CharField('Название', max_length=255, blank=True, null=True)
     work_time = models.CharField('часы работы', max_length=255, blank=True, null=True)
     comment = models.TextField(blank=True, null=True)
-    address = models.TextField(blank=True, null=True)
+    address = models.TextField(blank=True, null=True, db_index=True)
     is_sign = models.BooleanField(default=False)
     is_have_other_additional_equipment = models.BooleanField(default=False, null=False)
     is_potencial = models.BooleanField(default=False)

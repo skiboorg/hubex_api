@@ -190,10 +190,10 @@ class GetOrdersByWorkerForCalendar(generics.ListAPIView):
         print(user_id)
         return Order.objects.filter(users__in=[user_id])
 class GetOrdersHistoryByObject(generics.ListAPIView):
-    serializer_class = OrderSerializer
+    serializer_class = OrderShortSerializer
 
     def get_queryset(self):
-        return Order.objects.filter(object_id=self.kwargs.get('object_id'), is_done=True)
+        return Order.objects.filter(equipment_id=self.kwargs.get('object_id'), is_done=True)
 
 
 class GetOrdersByUser(generics.ListAPIView):

@@ -87,7 +87,7 @@ class GetModel(generics.ListAPIView):
 
 class UpdateEquipment(APIView):
     def post(self, request):
-        equipment = Equipment.objects.get(serial_number=self.request.query_params.get('serial'))
+        equipment = Equipment.objects.get(id=self.request.query_params.get('id'))
 
         data = request.data
         print(data)

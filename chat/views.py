@@ -9,7 +9,7 @@ from itertools import chain
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from .services import send_to_all_users_websocket_notify,send_to_user_websocket_notify
-from user.models import User
+from user.models import User,Notification
 
 channel_layer = get_channel_layer()
 
@@ -34,6 +34,15 @@ class AddMessageInOrderChat(APIView):
         user_uuid = data['user']
         user = User.objects.get(uuid=user_uuid)
         chat = OrderChat.objects.get(order__uuid=order_uuid)
+        print(user)
+        for userr in chat.users.all():
+            if userr != request.user:
+                Notification.objects.create(
+                    order_number=chat.order.number,
+                    user = userr,
+                    text = f'Сообщение в чате заявка №{chat.order.number}',
+                    link= f'/service/order/{chat.order.number}'
+                )
 
         new_message = OrderChatMessage.objects.create(user=user, chat=chat, message=message)
 

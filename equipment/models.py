@@ -61,6 +61,7 @@ class Equipment(models.Model):
     is_temp_equipment = models.BooleanField(default=False, blank=True)
     warranty_ends = models.DateField(blank=True, null=True)
     service_book_sign_date = models.DateField(blank=True, null=True)
+    pay_date = models.DateField(blank=True, null=True)
     def __str__(self):
         return f'S/N :{self.serial_number} '
 

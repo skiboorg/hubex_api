@@ -127,30 +127,36 @@ class AddEqip(APIView):
         wb = load_workbook(filename='equip.xlsx')
         sheet_obj = wb.active
         max_row = sheet_obj.max_row
-        for i in range(5, max_row + 6):
+        for i in range(2, max_row + 3):
             obj_number = sheet_obj.cell(row=i, column=1)
             if obj_number.value:
                 obj = Object.objects.filter(number=obj_number.value).first()
                 if obj:
                     model_id = sheet_obj.cell(row=i, column=2)
                     equip_serial = sheet_obj.cell(row=i, column=3)
-                    equip_date_in_work = sheet_obj.cell(row=i, column=4)
-                    equip_service_book_date = sheet_obj.cell(row=i, column=5)
-                    print(obj_number.value, equip_date_in_work.value, equip_service_book_date.value)
+                    equip_pay_date = sheet_obj.cell(row=i, column=4)
+                    equip_date_in_work = sheet_obj.cell(row=i, column=5)
+                    equip_service_book_date = sheet_obj.cell(row=i, column=6)
+                    print(obj_number.value, model_id.value,equip_serial.value,equip_pay_date.value, equip_date_in_work.value, equip_service_book_date.value)
                     if equip_serial.value :
-                        equipment, created = Equipment.objects.get_or_create(serial_number=equip_serial.value)
-                        if created:
-                            equipment.model_id = model_id.value
-                        if equip_date_in_work.value and equip_date_in_work.value != ' ':
-                            equipment.date_in_work = equip_date_in_work.value
-                        if equip_service_book_date.value and equip_service_book_date.value != ' ':
-                            equipment.service_book_sign_date = equip_service_book_date.value
-                            equipment.is_service_book_sign = True
+                        try:
+                            equipment, created = Equipment.objects.get_or_create(serial_number=equip_serial.value)
+                            if created:
+                                equipment.model_id = model_id.value
+                            if equip_date_in_work.value and equip_date_in_work.value != ' ':
+                                equipment.date_in_work = equip_date_in_work.value
+                            if equip_pay_date.value and equip_pay_date.value != ' ':
+                                equipment.pay_date = equip_pay_date.value
+                            if equip_service_book_date.value and equip_service_book_date.value != ' ':
+                                equipment.service_book_sign_date = equip_service_book_date.value
+                                equipment.is_service_book_sign = True
 
-                        equipment.object = obj
-                        equipment.save()
+                            equipment.object = obj
+                            equipment.save()
+                        except:
+                            print('error')
                 else:
-                    print('no object', obj_number)
+                    print('no object', obj_number.value)
     #             print(obj_number.value,
     # model_id.value,
     # equip_serial.value,
@@ -163,21 +169,14 @@ class FillObject(APIView):
 
     def get(self,request):
         from openpyxl import load_workbook
-        wb = load_workbook(filename='obj.xlsx')
+        wb = load_workbook(filename='obj2.xlsx')
         sheet_obj = wb.active
         max_row = sheet_obj.max_row
-        max_col = 0
-        # for i in range(1, 20000):
-        #     if sheet_obj.cell(row=1, column=i).value == None:
-        #         max_col = i
-        #         break
-        #     else:
-        #         print(sheet_obj.cell(row=1, column=i).value,i)
 
-        # Loop will print all columns name
-        # max_row
-        for i in range(5,  max_row+6):
+        for i in range(5,  max_row + 6):
+
             obj_number = sheet_obj.cell(row=i, column=1)
+            print(obj_number)
             obj_address = sheet_obj.cell(row=i, column=2)
             obj_comment = sheet_obj.cell(row=i, column=3)
             obj_dealer = sheet_obj.cell(row=i, column=4)
@@ -188,17 +187,20 @@ class FillObject(APIView):
                 new_obj.save()
 
             new_obj.additional_equipments.all().delete()
-            for j in range(5, 20):
+            print(obj_number.value,obj_address.value,obj_comment.value,obj_dealer.value)
+            for j in range(5, 45):
+                print('id', sheet_obj.cell(row=3, column=j).value)
+                print('amount', sheet_obj.cell(row=i, column=j).value)
                 if sheet_obj.cell(row=i, column=j).value != ' ':
                     if sheet_obj.cell(row=i, column=j).value:
                         ObjectAdditionalEquipment.objects.create(
                                 object=new_obj,
                                 amount=sheet_obj.cell(row=i, column=j).value,
                                 model_id=sheet_obj.cell(row=3, column=j).value)
-                     # print('id',sheet_obj.cell(row=3, column=j).value)
-                     # print('amount',sheet_obj.cell(row=i, column=j).value)
 
-            #print(obj_number.value,obj_address.value,obj_comment.value,obj_dealer.value)
+
+
+
         #     #Object.objects.create(number=obj_number.value,address=obj_address.value)
 
         return Response(status=200)
