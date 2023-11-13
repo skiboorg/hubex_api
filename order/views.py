@@ -197,7 +197,7 @@ class GetOrdersHistoryByObject(generics.ListAPIView):
 
 
 class GetOrdersByUser(generics.ListAPIView):
-    serializer_class = OrderSerializer
+    serializer_class = OrderShortSerializer
 
     def get_queryset(self):
         print(self.kwargs.get('id'))

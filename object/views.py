@@ -28,10 +28,12 @@ class ObjectFilter(django_filters.FilterSet):
         model = Object
         fields = ['name']
 
+
 class ObjectPagination(PageNumberPagination):
     page_size = 15
     page_size_query_param = 'page_size'
     max_page_size = 10000
+
 
 class ObjectViewSet(viewsets.ModelViewSet):
     pagination_class = ObjectPagination
@@ -91,12 +93,12 @@ class GetAddEqCategory(generics.ListAPIView):
     serializer_class = AdditionalEquipmentCategorySerializer
     queryset = AdditionalEquipmentCategory.objects.all()
 
+
 class GetAddEqModel(generics.ListAPIView):
     serializer_class = AdditionalEquipmentModelSerializer
+
     def get_queryset(self):
         return AdditionalEquipmentModel.objects.filter(category_id=self.request.query_params.get('c_id'))
-
-
 
 
 class DeleteAddEq(APIView):
@@ -105,6 +107,7 @@ class DeleteAddEq(APIView):
         obj = ObjectAdditionalEquipment.objects.get(id=request.data['e_id'])
         obj.delete()
         return Response(status=200)
+
 
 class DeleteFile(APIView):
     def post(self,request):
@@ -119,6 +122,7 @@ class DeleteContact(APIView):
         obj = ObjectContact.objects.get(id=request.data['c_id'])
         obj.delete()
         return Response(status=200)
+
 
 class AddEqip(APIView):
     def get(self, request):

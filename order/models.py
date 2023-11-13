@@ -251,6 +251,9 @@ class CheckListTableData(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
 
+    def __str__(self):
+        return f'Заявка №{self.order.number} | {self.check_list.name}'
+
 class CheckListTableInput(models.Model):
     order_num = models.IntegerField(default=1, blank=True)
     table = models.ForeignKey(CheckListTable, on_delete=models.CASCADE, blank=True, null=True, related_name='check_list_table_inputs')
