@@ -17,7 +17,7 @@ class Status(models.Model):
         verbose_name_plural = 'Статус '
 
     def __str__(self):
-        return self.name
+        return f'{self.name}'
 
 
 class Type(models.Model):
@@ -28,7 +28,7 @@ class Type(models.Model):
         verbose_name_plural = 'Тип заявки'
 
     def __str__(self):
-        return self.name
+        return f'{self.name}'
 
 class WorkType(models.Model):
     name = models.CharField(max_length=255, blank=True, null=True)
@@ -38,7 +38,7 @@ class WorkType(models.Model):
         verbose_name_plural = 'Тип работ'
 
     def __str__(self):
-        return self.name
+        return f'{self.name}'
 
 
 class InputField(models.Model):
@@ -51,7 +51,7 @@ class InputField(models.Model):
     is_separator = models.BooleanField(default=False, null=True)
 
     def __str__(self):
-        return self.name
+        return f'{self.name}'
 
     class Meta:
         verbose_name = 'Тип ввода чеклиста'
@@ -63,7 +63,7 @@ class CheckList(models.Model):
     name = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
-        return self.name
+        return f'{self.name}'
 
     class Meta:
         verbose_name = 'Чеклисты'
@@ -102,7 +102,7 @@ class Stage(models.Model):
     # btn_2_label = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
-        return self.name
+        return f'{self.name}'
 
 
 class StageGroupSelect(models.Model):
@@ -128,12 +128,13 @@ class Order(models.Model):
     object = models.ForeignKey('object.Object', on_delete=models.CASCADE, blank=True, null=True)
     equipment = models.ForeignKey('equipment.Equipment', on_delete=models.CASCADE, blank=True, null=True,related_name='orders')
     comment = models.TextField(blank=True, null=True)
-
+    phone = models.CharField('Телефон', max_length=255, blank=True, null=True)
     date_created_at = models.DateTimeField(auto_now_add=True, null=True)
     date_assign_worker = models.DateField(blank=True, null=True)
     date_done = models.DateField(blank=True, null=True)
     date_dead_line = models.DateField(blank=True, null=True)
     is_done = models.BooleanField(default=False, blank=True)
+    use_sms = models.BooleanField(default=False, blank=True)
     is_time_left = models.BooleanField(default=False, blank=True)
     is_order_for_additional_equipment = models.BooleanField(default=False, blank=True)
     is_created_by_client = models.BooleanField(default=False, blank=True)
@@ -223,7 +224,7 @@ class CheckListTableInputField(models.Model):
     is_input = models.BooleanField(default=False, null=True)
     grow = models.IntegerField(default=1, null=True)
     def __str__(self):
-        return self.name
+        return f'{self.name}'
 
     class Meta:
         verbose_name = 'Тип ввода таблицы в чеклисте'
@@ -237,7 +238,7 @@ class CheckListTable(models.Model):
     default_data = models.JSONField(blank=True, null=True)
     # data = models.ForeignKey(CheckListTableData, on_delete=models.SET_NULL, blank=True, null=True)
     def __str__(self):
-        return self.name
+        return f'{self.name}'
 
     class Meta:
         verbose_name = 'Таблицы в чеклисте'

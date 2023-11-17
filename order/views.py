@@ -39,6 +39,7 @@ class OrderFilter(django_filters.FilterSet):
         fields = {
             'is_done': ('exact',),
             'is_critical': ('exact',),
+            'status_id': ('exact',),
         }
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
@@ -299,6 +300,10 @@ class GetCheckListTemplate(generics.RetrieveAPIView):
 class OrderTypes(generics.ListAPIView):
     serializer_class = TypeSerializer
     queryset = Type.objects.all()
+
+class OrderStatuses(generics.ListAPIView):
+    serializer_class = StatusSerializer
+    queryset = Status.objects.all()
 
 class OrderWorkTypes(generics.ListAPIView):
     serializer_class = WorkTypeSerializer

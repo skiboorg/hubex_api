@@ -13,6 +13,7 @@ urlpatterns = [
     path('api/data/', include('client.urls')),
     path('api/data/', include('order.urls')),
     path('api/chat/', include('chat.urls')),
+    path('api/stats/', include('stats.urls')),
 
     path('api/data/', include('object.urls')),
     path('api/data/', include('equipment.urls')),
