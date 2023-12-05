@@ -19,8 +19,8 @@ class ObjectFilter(django_filters.FilterSet):
     def my_custom_filter(self, queryset, name, value):
         return queryset.filter(
             Q(number__icontains=value) |
-            Q(id__icontains=value) |
-            Q(name__icontains=value) |
+            # Q(id__icontains=value) |
+            # Q(name__icontains=value) |
             Q(address__icontains=value)
         )
 

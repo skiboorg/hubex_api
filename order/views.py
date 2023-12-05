@@ -1,5 +1,6 @@
 import json
 
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .serializers import *
@@ -18,6 +19,11 @@ from object.models import Object
 from equipment.models import Equipment
 
 from user.services import send_tg_mgs
+
+class OrderPagination(PageNumberPagination):
+    page_size = 15
+    page_size_query_param = 'page_size'
+    max_page_size = 10000
 
 class OrderFilter(django_filters.FilterSet):
     created_at_gte = IsoDateTimeFilter(field_name="date_created_at", lookup_expr='gte')
@@ -42,6 +48,7 @@ class OrderFilter(django_filters.FilterSet):
             'status_id': ('exact',),
         }
 class OrderViewSet(viewsets.ModelViewSet):
+    pagination_class = OrderPagination
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
     lookup_field = 'number'
@@ -58,17 +65,18 @@ class OrderViewSet(viewsets.ModelViewSet):
     #     print('serializer.validated_data',serializer.validated_data)
     #     serializer.save()
 
-    def list(self, request, *args, **kwargs):
-        qs = self.get_queryset()
-
-        for item in qs:
-            if item.date_dead_line:
-                if datetime.date.today() > item.date_dead_line:
-                    item.is_time_left = True
-                    item.save(update_fields=['is_time_left'])
-        filtered_queryset = self.filter_queryset(qs)
-        serializer = self.get_serializer(filtered_queryset, many=True)
-        return Response(serializer.data)
+    # def list(self, request, *args, **kwargs):
+    #     qs = self.get_queryset()
+    #
+    #     for item in qs:
+    #         if item.date_dead_line:
+    #             if datetime.date.today() > item.date_dead_line:
+    #                 item.is_time_left = True
+    #                 item.save(update_fields=['is_time_left'])
+    #     filtered_queryset = self.filter_queryset(qs)
+    #     page = self.paginate_queryset(filtered_queryset)
+    #     serializer = self.get_serializer(page, many=True)
+    #     return Response(serializer.data)
     def get_serializer_class(self):
         full_mode = self.request.query_params.get('full', None)
 
@@ -255,6 +263,19 @@ class AddUsersToOrder(APIView):
             print(order_user)
         return Response(status=200)
 
+
+class CheckOrders(APIView):
+    def get(self,request):
+
+        qs = Order.objects.filter(is_done=False)
+        for item in qs:
+            print(item)
+            if item.date_dead_line:
+                if datetime.date.today() > item.date_dead_line:
+                    item.is_time_left = True
+                    item.save(update_fields=['is_time_left'])
+        return Response(status=200)
+
 class AddUserToOrder(APIView):
     def post(self, request):
         print(request.data)
@@ -318,6 +339,17 @@ class OrderDeleteFile(generics.DestroyAPIView):
     serializer_class = OrderFile
     queryset = OrderFile.objects.all()
 
+class OrderAddFile(APIView):
+    def post(self, request):
+        order = Order.objects.get(number=self.request.query_params.get('number'))
+        try:
+            request.data.pop('files')
+            files_descriptions = request.data.pop('descriptions')
+        except:
+            files_descriptions = []
+        for index, file in enumerate(request.FILES.getlist('files')):
+            OrderFile.objects.create(file=file, order=order, text=files_descriptions[index])
+        return Response(status=200)
 class OrderUpdate(APIView):
     def post(self, request):
         order = Order.objects.get(number=self.request.query_params.get('number'))
@@ -334,8 +366,10 @@ class OrderUpdate(APIView):
         for dat in data:
             json_data[dat] = json.loads(data[dat])
         print(json_data)
-        order.object_id = json_data['object']
-        equipment_id = json_data['equipment']
+        object_id = json_data.get('object', None)
+        if object_id:
+            order.object_id = object_id
+        equipment_id = json_data.get('equipment',None)
         if not equipment_id:
             temp_equipment = Equipment.objects.get(is_temp_equipment=True)
             order.equipment = temp_equipment

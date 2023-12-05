@@ -9,6 +9,8 @@ urlpatterns = [
     path('order_by_user/<int:id>', views.GetOrdersByUser.as_view()),
     path('order_add_users', views.AddUsersToOrder.as_view()),
     path('order_add_user', views.AddUserToOrder.as_view()),
+    path('orders_check', views.CheckOrders.as_view()),
+    path('order_add_file', views.OrderAddFile.as_view()),
     path('order_delete_user', views.DeleteUserFromOrder.as_view()),
     path('order_checklists', views.GetCheckLists.as_view()),
     path('checklists_templates', views.GetCheckListsTemplates.as_view()),
