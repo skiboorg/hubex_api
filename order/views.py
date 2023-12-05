@@ -169,8 +169,13 @@ class OrderViewSet(viewsets.ModelViewSet):
 class SaveCheckListData(APIView):
     def post(self, request):
         print(request.data)
-        obj,created = CheckListData.objects.get_or_create(order_id=request.data['order_id'],check_list_id=request.data['check_list_id'])
-
+        obj, _ = CheckListData.objects.get_or_create(order_id=request.data['order_id'],check_list_id=request.data['check_list_id'])
+        h_obj, _ = CheckListHistory.objects.get_or_create(order_id=request.data['order_id'],check_list_id=request.data['check_list_id'])
+        CheckListDataHistory.objects.create(
+            history_obj=h_obj,
+            data=request.data['data'],
+            created_at=datetime.datetime.now()
+        )
         obj.data = request.data['data']
         obj.save()
         return Response(status=200)
@@ -376,10 +381,7 @@ class OrderUpdateChecklist(APIView):
         data = request.data
         print(data['check_list'])
         print(data['tables'])
-        check_list = CheckList.objects.get(
-            id=data['check_list']['id']
-        )
-
+        check_list = CheckList.objects.get(id=data['check_list']['id'])
         inputs = check_list.inputs.all()
         inputs.delete()
 
@@ -393,20 +395,44 @@ class OrderUpdateChecklist(APIView):
                 label=input['label'],
                 labels=labels[:-1]
             )
-        tables = check_list.check_list_tables.all()
-        tables.delete()
         for table in data['tables']:
-            new_table = CheckListTable.objects.create(
-                name=table['name'],
-                check_list=check_list,
-                default_data=table['rows']
-            )
+            print(table)
+            table_id = table.get('id', None)
+            if not table_id:
+                check_list_table = CheckListTable.objects.create(
+                    name=table['name'],
+                    check_list=check_list,
+                    default_data=table['rows']
+                )
+            else:
+                check_list_table = CheckListTable.objects.get(id=table_id)
+                table_inputs = check_list_table.check_list_table_inputs.all()
+                table_inputs.delete()
+                check_list_table.name = table['name']
+                check_list_table.default_data = table['rows']
+                check_list_table.save()
             for input in table['inputs']:
                 CheckListTableInput.objects.create(
-                    table=new_table,
+                    table=check_list_table,
                     input_id=input['input']['id'],
-                    label = input['label']
+                    label= input['label']
                 )
+
+
+        # tables = check_list.check_list_tables.all()
+        # tables.delete()
+        # for table in data['tables']:
+        #     new_table = CheckListTable.objects.create(
+        #         name=table['name'],
+        #         check_list=check_list,
+        #         default_data=table['rows']
+        #     )
+        #     for input in table['inputs']:
+        #         CheckListTableInput.objects.create(
+        #             table=new_table,
+        #             input_id=input['input']['id'],
+        #             label = input['label']
+        #         )
         return Response(status=200)
 class OrderCreateChecklist(APIView):
     def post(self, request):
@@ -444,6 +470,16 @@ class OrderSaveTable(APIView):
     def post(self, request):
         data = request.data
         table = CheckListTable.objects.get(id=data['table_id'])
+
+        h_obj, _ = CheckListHistory.objects.get_or_create(order_id=data['order_id'],
+                                                          check_list_id=data['check_list_id'])
+        CheckListTableHistory.objects.create(
+            history_obj=h_obj,
+            data=data['data'],
+            table=table,
+            created_at=datetime.datetime.now()
+        )
+
         if not table.default_data:
             table.default_data = data['data']
             table.save()

@@ -16,6 +16,13 @@ class CheckListTableInputInline (admin.TabularInline):
 class StageGroupSelectInline (admin.TabularInline):
     model = StageGroupSelect
     extra = 0
+class CheckListTableHistoryInline (admin.TabularInline):
+    model = CheckListTableHistory
+    extra = 0
+
+class CheckListDataHistoryInline (admin.TabularInline):
+    model = CheckListDataHistory
+    extra = 0
 
 class StageButtontInline (admin.TabularInline):
     model = StageButton
@@ -29,6 +36,10 @@ class CheckListAdmin(admin.ModelAdmin):
 class CheckListTableAdmin(admin.ModelAdmin):
     model = CheckList
     inlines = [CheckListTableInputInline]
+
+class CheckListHistoryAdmin(admin.ModelAdmin):
+    model = CheckListHistory
+    inlines = [CheckListDataHistoryInline, CheckListTableHistoryInline]
 
 
 
@@ -48,8 +59,9 @@ admin.site.register(Type)
 admin.site.register(WorkType)
 admin.site.register(StageLog)
 admin.site.register(CheckListTable,CheckListTableAdmin)
-#admin.site.register(CheckListTableInput)
+admin.site.register(CheckListTableInput)
 admin.site.register(CheckListTableInputField)
 admin.site.register(CheckListTableData)
+admin.site.register(CheckListHistory, CheckListHistoryAdmin)
 
 

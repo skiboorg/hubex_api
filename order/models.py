@@ -262,6 +262,9 @@ class CheckListTableInput(models.Model):
     input = models.ForeignKey(CheckListTableInputField, on_delete=models.CASCADE, blank=True, null=True)
     label = models.CharField(max_length=255, blank=True, null=True)
     value = models.CharField(max_length=255, blank=True, null=True)
+
+    def __str__(self):
+        return f'{self.table.id}'
     class Meta:
         ordering = ('order_num',)
 
@@ -269,3 +272,21 @@ class CheckListTableInput(models.Model):
 
 
 
+class CheckListHistory(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, blank=True, null=True)
+    check_list = models.ForeignKey(CheckList, on_delete=models.CASCADE, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+
+    def __str__(self):
+        return f'Заявка - {self.order.number} | Чеклист: {self.check_list.name}'
+
+
+class CheckListDataHistory(models.Model):
+    data = models.JSONField(blank=True, null=True)
+    history_obj = models.ForeignKey(CheckListHistory, on_delete=models.CASCADE, blank=True, null=True)
+    created_at = models.DateTimeField(blank=True, null=True)
+class CheckListTableHistory(models.Model):
+    data = models.JSONField(blank=True, null=True)
+    table = models.ForeignKey(CheckListTable, on_delete=models.SET_NULL, blank=True, null=True)
+    history_obj = models.ForeignKey(CheckListHistory, on_delete=models.CASCADE, blank=True, null=True)
+    created_at = models.DateTimeField(blank=True, null=True)
