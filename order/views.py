@@ -21,7 +21,7 @@ from equipment.models import Equipment
 from user.services import send_tg_mgs
 
 class OrderPagination(PageNumberPagination):
-    page_size = 15
+    page_size = 30
     page_size_query_param = 'page_size'
     max_page_size = 10000
 
