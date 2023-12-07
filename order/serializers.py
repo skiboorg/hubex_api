@@ -112,8 +112,8 @@ class StageShortSerializer(serializers.ModelSerializer):
         fields = ['name']
 
 class StageLogSerializer(serializers.ModelSerializer):
-    from user.serializers import UserSerializer
-    user = UserSerializer(many=False, read_only=True, required=False)
+    from user.serializers import UserShortSerializer
+    user = UserShortSerializer(many=False, read_only=True, required=False)
     new_stage = StageShortSerializer(many=False, read_only=True, required=False)
     class Meta:
         model = StageLog
@@ -184,9 +184,36 @@ class EquipmentSerializer(serializers.ModelSerializer):
         model = Equipment
         fields = '__all__'
 
+
+class EquipmentShortSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Equipment
+        fields = ['id','serial_number']
+
 class OrderFileSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderFile
+        fields = '__all__'
+
+class OrdersForWorkerSerializer(serializers.ModelSerializer):
+    from user.serializers import OrderUserSerializer
+    from object.serializers import ObjectShortSerializer
+
+    type = TypeSerializer(many=False, read_only=True, required=False)
+    work_type = WorkTypeSerializer(many=False, read_only=True, required=False)
+    status = StatusSerializer(many=False, read_only=True, required=False)
+    stage = StageShortSerializer(many=False, read_only=True, required=False)
+    object = ObjectShortSerializer(many=False, read_only=True, required=False)
+    equipment = EquipmentShortSerializer(many=False, read_only=True, required=False)
+    users = OrderUserSerializer(many=True, read_only=True, required=False)
+
+    #check_lists = CheckListDataSerializer(many=True, read_only=True, required=False)
+    #stage_logs = StageLogSerializer(many=True, read_only=True, required=False)
+    files = OrderFileSerializer(many=True, read_only=True, required=False)
+
+    class Meta:
+        model = Order
         fields = '__all__'
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -199,7 +226,8 @@ class OrderSerializer(serializers.ModelSerializer):
     stage = StageSerializer(many=False, read_only=True, required=False)
     object = ObjectSerializer(many=False, read_only=True, required=False)
     equipment = EquipmentSerializer(many=False, read_only=True, required=False)
-    users = UserSerializer(many=True, read_only=True, required=False)
+    #users = UserSerializer(many=True, read_only=True, required=False)
+    users = serializers.SerializerMethodField()
     check_lists = CheckListDataSerializer(many=True, read_only=True, required=False)
     stage_logs = StageLogSerializer(many=True, read_only=True, required=False)
     files = OrderFileSerializer(many=True, read_only=True, required=False)
@@ -207,12 +235,51 @@ class OrderSerializer(serializers.ModelSerializer):
         model = Order
         fields = '__all__'
 
+    def get_users(self, obj):
+        print ('number',obj.number)
+        result = []
+        for user in obj.users.all():
+            data = {
+                "id": None,
+                "avatar":None,
+                "fio":None,
+                "role":{
+                    "name":'test'
+                },
+                "work_time":None,
+            }
+
+
+            data['id']=user.id
+            data['avatar']=user.avatar if user.avatar else None
+            data['fio']=user.fio
+            data['role']['name']=user.role.name
+            times = []
+            for time in user.work_time.all():
+
+                if time.order.number == obj.number:
+                    print(time)
+                    times.append({
+                        'date':time.date,
+                        'end_time':time.end_time,
+                        'id':time.id,
+                        'start_time':time.start_time,
+                        'title':f'Заявка {obj.number}',
+                        "type":{
+                            "name":time.type.name if time.type else 'Не указано'
+                        }
+                    })
+            data['work_time'] = times
+            result.append(data)
+        return result
+
+
 class OrderShortSerializer(serializers.ModelSerializer):
-    from object.serializers import ObjectSerializer
+    from object.serializers import ObjectShortSerializer
 
     status = StatusSerializer(many=False, read_only=True, required=False)
-    object = ObjectSerializer(many=False, read_only=True, required=False)
-    equipment = EquipmentSerializer(many=False, read_only=True, required=False)
+    object = ObjectShortSerializer(many=False, read_only=True, required=False)
+    equipment = EquipmentShortSerializer(many=False, read_only=True, required=False)
     type = TypeSerializer(many=False, read_only=True, required=False)
     work_type = WorkTypeSerializer(many=False, read_only=True, required=False)
     class Meta:

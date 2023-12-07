@@ -19,6 +19,7 @@ urlpatterns = [
     path('hide_time', views.HideUnhideTime.as_view()),
 
     path('get_user/<uuid>', views.GetUserByUuid.as_view()),
+    path('work_time', views.GetUserWT.as_view()),
     path('delete_user/<uuid>', views.DeleteUser.as_view()),
     path('update_user_work_time', views.UpdateUserWorkTime.as_view()),
     path('set_notify_read', views.SetNotifyRead.as_view()),

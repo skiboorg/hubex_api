@@ -141,6 +141,13 @@ class GetUserByUuid(generics.RetrieveAPIView):
     lookup_field = 'uuid'
 
 
+class GetUserWT(generics.ListAPIView):
+    serializer_class = UserWorkTimeSerializer
+    def get_queryset(self):
+        return UserWorkTime.objects.filter(user_id=self.request.query_params.get('id'))
+
+
+
 
 class DeleteUser(generics.DestroyAPIView):
     queryset = User.objects.all()
@@ -150,7 +157,7 @@ class DeleteUser(generics.DestroyAPIView):
 
 class GetAllUsers(generics.ListAPIView):
     # permission_classes = [IsAuthenticated]
-    serializer_class = UserSerializer
+    serializer_class = OrderUserSerializer
     queryset = User.objects.filter(is_active=True)
 
 class GetRoles(generics.ListCreateAPIView):

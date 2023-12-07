@@ -21,7 +21,7 @@ from equipment.models import Equipment
 from user.services import send_tg_mgs
 
 class OrderPagination(PageNumberPagination):
-    page_size = 30
+    page_size = 50
     page_size_query_param = 'page_size'
     max_page_size = 10000
 
@@ -189,7 +189,7 @@ class SaveCheckListData(APIView):
         return Response(status=200)
 
 class GetOrdersByWorker(generics.ListAPIView):
-    serializer_class = OrderSerializer
+    serializer_class = OrdersForWorkerSerializer
 
     def get_queryset(self):
         user = self.request.user
