@@ -246,6 +246,9 @@ class OrderSerializer(serializers.ModelSerializer):
                 "role":{
                     "name":'test'
                 },
+                "order_data":{
+                    "order_number":None
+                },
                 "work_time":None,
             }
 
@@ -254,6 +257,7 @@ class OrderSerializer(serializers.ModelSerializer):
             data['avatar']=user.avatar if user.avatar else None
             data['fio']=user.fio
             data['role']['name']=user.role.name
+
             times = []
             for time in user.work_time.all():
 
@@ -265,6 +269,9 @@ class OrderSerializer(serializers.ModelSerializer):
                         'id':time.id,
                         'start_time':time.start_time,
                         'title':f'Заявка {obj.number}',
+                        "order_data": {
+                            "order_number": obj.number
+                        },
                         "type":{
                             "name":time.type.name if time.type else 'Не указано'
                         }
