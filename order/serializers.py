@@ -206,8 +206,8 @@ class OrdersForWorkerSerializer(serializers.ModelSerializer):
     stage = StageShortSerializer(many=False, read_only=True, required=False)
     object = ObjectShortSerializer(many=False, read_only=True, required=False)
     equipment = EquipmentShortSerializer(many=False, read_only=True, required=False)
-    users = OrderUserSerializer(many=True, read_only=True, required=False)
-
+    #users = OrderUserSerializer(many=True, read_only=True, required=False)
+    users = serializers.SerializerMethodField()
     #check_lists = CheckListDataSerializer(many=True, read_only=True, required=False)
     #stage_logs = StageLogSerializer(many=True, read_only=True, required=False)
     files = OrderFileSerializer(many=True, read_only=True, required=False)
@@ -215,6 +215,50 @@ class OrdersForWorkerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = '__all__'
+
+    def get_users(self, obj):
+        print ('number',obj.number)
+        result = []
+        for user in obj.users.all():
+            data = {
+                "id": None,
+                "avatar":None,
+                "fio":None,
+                "login":None,
+                "role":{
+                    "name":'test'
+                },
+                "work_time":None,
+            }
+
+
+            data['id']=user.id
+            data['avatar']=user.avatar if user.avatar else None
+            data['fio']=user.fio
+            data['login']=user.login
+            data['role']['name']=user.role.name
+
+            times = []
+            for time in user.work_time.all():
+
+                if time.order.number == obj.number:
+                    print(time)
+                    times.append({
+                        'date':time.date,
+                        'end_time':time.end_time,
+                        'id':time.id,
+                        'start_time':time.start_time,
+                        'title':f'Заявка {obj.number}',
+                        "order_data": {
+                            "order_number": obj.number
+                        },
+                        "type":{
+                            "name":time.type.name if time.type else 'Не указано'
+                        }
+                    })
+            data['work_time'] = times
+            result.append(data)
+        return result
 
 class OrderSerializer(serializers.ModelSerializer):
     from user.serializers import UserSerializer

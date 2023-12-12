@@ -193,8 +193,20 @@ class GetOrdersByWorker(generics.ListAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        print(user.role.id)
-        return Order.objects.filter(is_done=False, users__in=[user.id], stage__role__in=[user.role.id])
+        #print(datetime.datetime.today().date())
+        result = []
+        orders = Order.objects.filter(is_done=False, users__in=[user.id], stage__role__in=[user.role.id])
+        # for order in orders:
+        #     print(order.number)
+        #     for user in order.users.all():
+        #         for time in user.work_time.all():
+        #             print(time.order.number)
+        times = UserWorkTime.objects.filter(date=str(datetime.datetime.today().date()))
+        #print('times', times)
+        for time in times:
+            result.append(orders.get(id=time.order.id))
+
+        return result
 
 class GetOrdersByWorkerForCalendar(generics.ListAPIView):
     serializer_class = OrderSerializer
@@ -221,9 +233,9 @@ class GetOrdersByUser(generics.ListAPIView):
 class DeleteUserFromOrder(APIView):
     def post(self, request):
         order_uuid = request.data['order']
-        user_uuid = request.data['user']
+        user_id = request.data['user']
         order = Order.objects.get(uuid=order_uuid)
-        user = User.objects.get(uuid=user_uuid)
+        user = User.objects.get(id=user_id)
         qs = UserWorkTime.objects.filter(order=order, user=user)
         order.users.remove(user)
         if qs.exists():

@@ -124,6 +124,7 @@ class UserShortSerializer(serializers.ModelSerializer):
 
 class OrderUserSerializer(serializers.ModelSerializer):
     role = RoleSerializer(many=False, required=False, read_only=True)
+
     class Meta:
         model = User
         fields = [
