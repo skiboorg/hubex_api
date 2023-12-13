@@ -204,7 +204,9 @@ class GetOrdersByWorker(generics.ListAPIView):
         times = UserWorkTime.objects.filter(date=str(datetime.datetime.today().date()))
         #print('times', times)
         for time in times:
-            result.append(orders.get(id=time.order.id))
+            order = orders.filter(id=time.order.id)
+            if order.exists():
+                result.append(order.first())
 
         return result
 
