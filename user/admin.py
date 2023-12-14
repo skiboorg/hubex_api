@@ -30,6 +30,7 @@ class UserAdmin(BaseUserAdmin):
         (None, {'fields': ('login', 'password')}),
         ('Personal info',
          {'fields': (
+             'show_only_today_orders',
              'role',
              'email',
              'telega',

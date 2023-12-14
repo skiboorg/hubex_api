@@ -193,22 +193,17 @@ class GetOrdersByWorker(generics.ListAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        #print(datetime.datetime.today().date())
-        result = []
+        today_orders = []
         orders = Order.objects.filter(is_done=False, users__in=[user.id], stage__role__in=[user.role.id])
-        # for order in orders:
-        #     print(order.number)
-        #     for user in order.users.all():
-        #         for time in user.work_time.all():
-        #             print(time.order.number)
-        times = UserWorkTime.objects.filter(date=str(datetime.datetime.today().date()))
-        #print('times', times)
-        for time in times:
-            order = orders.filter(id=time.order.id)
-            if order.exists():
-                result.append(order.first())
-
-        return result
+        if user.show_only_today_orders:
+            times = UserWorkTime.objects.filter(date=str(datetime.datetime.today().date()))
+            for time in times:
+                order = orders.filter(id=time.order.id)
+                if order.exists():
+                    today_orders.append(order.first())
+            return today_orders
+        else:
+            return orders
 
 class GetOrdersByWorkerForCalendar(generics.ListAPIView):
     serializer_class = OrderSerializer
