@@ -45,7 +45,7 @@ class OrderFilter(django_filters.FilterSet):
         fields = {
             'is_done': ('exact',),
             'is_critical': ('exact',),
-            'status_id': ('exact',),
+            'status_id': ('in',),
         }
 class OrderViewSet(viewsets.ModelViewSet):
     pagination_class = OrderPagination
