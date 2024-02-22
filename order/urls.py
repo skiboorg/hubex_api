@@ -27,6 +27,7 @@ urlpatterns = [
     path('order_get_checklist_table_inputs', views.OrderGetChecklistTableInputs.as_view()),
     path('order_create_checklist', views.OrderCreateChecklist.as_view()),
     path('order_update_checklist', views.OrderUpdateChecklist.as_view()),
+    path('order_fill', views.OrderFill.as_view()),
     path('', include(router.urls)),
 
 

@@ -316,7 +316,10 @@ class GetCheckListsTemplates(generics.ListAPIView):
     serializer_class = CheckListSerializer
     queryset = CheckList.objects.all()
 
+
+
 class GetCheckLists(generics.ListAPIView):
+    pagination_class = OrderPagination
     serializer_class = CheckListDataShortSerializer
     queryset = CheckListData.objects.all()
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
@@ -544,3 +547,58 @@ class OrderGetChecklistInputs(generics.ListAPIView):
 class OrderGetChecklistTableInputs(generics.ListAPIView):
     serializer_class = CheckListTableInputFieldSerializer
     queryset = CheckListTableInputField.objects.all()
+
+
+class OrderFill(APIView):
+
+    def get(self,request):
+        from glob import glob
+
+        from openpyxl import load_workbook
+        wb = load_workbook(filename='orders.xlsx')
+        sheet_obj = wb.active
+        max_row = sheet_obj.max_row
+
+        status_id = 4
+
+        for i in range(1,  3):
+            ord_number = sheet_obj.cell(row=i, column=1).value
+            ord_date = sheet_obj.cell(row=i, column=2).value
+            ord_comment = sheet_obj.cell(row=i, column=3).value
+            ord_obj = sheet_obj.cell(row=i, column=4).value
+            user_id = sheet_obj.cell(row=i, column=5).value
+            user_date = sheet_obj.cell(row=i, column=6).value
+            order, order_created = Order.objects.get_or_create(number=ord_number)
+            if order_created:
+                print('created new order')
+                OrderChat.objects.create(order=order)
+            print(order)
+            print(ord_number,ord_date, ord_comment, ord_obj, user_id, user_date)
+
+            obj = Object.objects.get(number=ord_obj)
+            order.type_id = 1
+            order.stage_id = 1
+            order.comment = ord_comment
+            order.object_id = obj.id
+            order.date_created_at = ord_date
+            order.status_id=status_id
+            order.is_done = True
+            order.users.add(user_id)
+            order.equipment = obj.equipments.first()
+            order.save()
+            user_time, time_created = UserWorkTime.objects.get_or_create(order=order,
+                                                                         date=user_date,user_id=user_id,
+                                                                         start_time='09:00',end_time='21:00',type_id=1)
+
+            print(obj.equipments.first())
+            if order_created:
+                dirs = glob("ord_files/*/", recursive = True)
+                for dir in dirs:
+                    if ord_number in dir:
+                        print(dir)
+                        files = glob(f"{dir}*", recursive = True)
+                        print(files)
+                        for file in files:
+                            OrderFile.objects.create(order=order,file=file , text='Файл' )
+
+        return Response(status=200)
