@@ -182,7 +182,7 @@ def order_post_save(sender, instance, created, **kwargs):
                     order_number=instance.number
                 )
 
-#post_save.connect(order_post_save, sender=Order)
+post_save.connect(order_post_save, sender=Order)
 
 class CheckListData(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, blank=True, null=True, related_name='check_lists')
