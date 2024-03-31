@@ -164,8 +164,8 @@ def order_post_save(sender, instance, created, **kwargs):
         default_type = Type.objects.get(is_default=True)
         default_status = Status.objects.get(is_default=True)
 
-        number = 10000 + instance.id
-        instance.number = number
+        # number = 10000 + instance.id
+        # instance.number = number
         instance.stage = default_stage
         if not instance.type:
             instance.type = default_type

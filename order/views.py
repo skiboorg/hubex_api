@@ -553,52 +553,65 @@ class OrderFill(APIView):
 
     def get(self,request):
         from glob import glob
-
+        import os
         from openpyxl import load_workbook
         wb = load_workbook(filename='orders.xlsx')
         sheet_obj = wb.active
         max_row = sheet_obj.max_row
 
         status_id = 4
+        # max_row-1
+        for i in range(1,  max_row-1):
 
-        for i in range(1,  3):
-            ord_number = sheet_obj.cell(row=i, column=1).value
-            ord_date = sheet_obj.cell(row=i, column=2).value
-            ord_comment = sheet_obj.cell(row=i, column=3).value
-            ord_obj = sheet_obj.cell(row=i, column=4).value
-            user_id = sheet_obj.cell(row=i, column=5).value
-            user_date = sheet_obj.cell(row=i, column=6).value
-            order, order_created = Order.objects.get_or_create(number=ord_number)
-            if order_created:
-                print('created new order')
-                OrderChat.objects.create(order=order)
-            print(order)
-            print(ord_number,ord_date, ord_comment, ord_obj, user_id, user_date)
-
-            obj = Object.objects.get(number=ord_obj)
-            order.type_id = 1
-            order.stage_id = 1
-            order.comment = ord_comment
-            order.object_id = obj.id
-            order.date_created_at = ord_date
-            order.status_id=status_id
-            order.is_done = True
-            order.users.add(user_id)
-            order.equipment = obj.equipments.first()
-            order.save()
-            user_time, time_created = UserWorkTime.objects.get_or_create(order=order,
-                                                                         date=user_date,user_id=user_id,
-                                                                         start_time='09:00',end_time='21:00',type_id=1)
-
-            print(obj.equipments.first())
-            if order_created:
-                dirs = glob("ord_files/*/", recursive = True)
-                for dir in dirs:
-                    if ord_number in dir:
-                        print(dir)
-                        files = glob(f"{dir}*", recursive = True)
-                        print(files)
-                        for file in files:
-                            OrderFile.objects.create(order=order,file=file , text='Файл' )
+                ord_number = sheet_obj.cell(row=i, column=1).value
+                ord_date = sheet_obj.cell(row=i, column=2).value
+                ord_comment = sheet_obj.cell(row=i, column=3).value
+                ord_obj = sheet_obj.cell(row=i, column=4).value
+                user_id = sheet_obj.cell(row=i, column=5).value
+                user_date = sheet_obj.cell(row=i, column=6).value
+                order, order_created = Order.objects.get_or_create(number=ord_number)
+                if order_created:
+                    #print('created new order')
+                    OrderChat.objects.create(order=order)
+                #print(order)
+                #print(ord_number,ord_date, ord_comment, ord_obj, user_id, user_date)
+                try:
+                    obj = Object.objects.get(number=ord_obj)
+                except:
+                    print('use NONE', i)
+                    obj = Object.objects.get(number='NONE')
+                if order_created:
+                    order.type_id = 1
+                    order.stage_id = 1
+                    order.comment = ord_comment
+                    order.object_id = obj.id
+                    order.date_created_at = ord_date
+                    order.status_id=status_id
+                    order.is_done = True
+                    if user_id:
+                        order.users.add(user_id)
+                    order.equipment = obj.equipments.first()
+                    order.save()
+                    if user_id:
+                        user_time, time_created = UserWorkTime.objects.get_or_create(order=order,
+                                                                                     date=user_date,user_id=user_id,
+                                                                                     start_time='09:00',end_time='21:00',type_id=1)
+                try:
+                #print(obj.equipments.first())
+                #
+                # files = order.files.all()
+                # files.delete()
+                    if order_created:
+                        dirs = glob("ord_files/*/", recursive = True)
+                        for dir in dirs:
+                            if ord_number in dir:
+                                print(dir)
+                                files = glob(f"{dir}*", recursive = True)
+                                #print(files)
+                                for file in files:
+                                    print(file)
+                                    OrderFile.objects.create(order=order,file=file , text='Файл' , size='0')
+                except:
+                     print('error with file', i)
 
         return Response(status=200)

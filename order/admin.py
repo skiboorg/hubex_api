@@ -41,11 +41,17 @@ class CheckListHistoryAdmin(admin.ModelAdmin):
     model = CheckListHistory
     inlines = [CheckListDataHistoryInline, CheckListTableHistoryInline]
 
-
+class OrderFileInline (admin.TabularInline):
+    model = OrderFile
+    extra = 0
 
 class StageAdmin(admin.ModelAdmin):
     model = Stage
     inlines = [StageGroupSelectInline,StageButtontInline]
+
+class OrderAdmin(admin.ModelAdmin):
+    model = Order
+    inlines = [OrderFileInline]
 
 
 admin.site.register(Status)
@@ -54,7 +60,7 @@ admin.site.register(CheckList,CheckListAdmin)
 #admin.site.register(CheckListInput)
 admin.site.register(Stage,StageAdmin)
 admin.site.register(CheckListData)
-admin.site.register(Order)
+admin.site.register(Order,OrderAdmin)
 admin.site.register(Type)
 admin.site.register(WorkType)
 admin.site.register(StageLog)
