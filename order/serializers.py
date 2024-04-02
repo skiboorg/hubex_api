@@ -327,12 +327,14 @@ class OrderSerializer(serializers.ModelSerializer):
 
 class OrderShortSerializer(serializers.ModelSerializer):
     from object.serializers import ObjectShortSerializer
-
+    from user.serializers import UserShortSerializer
     status = StatusSerializer(many=False, read_only=True, required=False)
     object = ObjectShortSerializer(many=False, read_only=True, required=False)
     equipment = EquipmentShortSerializer(many=False, read_only=True, required=False)
     type = TypeSerializer(many=False, read_only=True, required=False)
     work_type = WorkTypeSerializer(many=False, read_only=True, required=False)
+    users = UserShortSerializer(many=True, read_only=True, required=False)
     class Meta:
         model = Order
         fields = '__all__'
+
